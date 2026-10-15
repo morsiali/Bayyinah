@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import { ArrowUpRight, FlaskConical, KeyRound } from 'lucide-react';
 import { Logo } from '@/components/ui';
-import { site } from '@/lib/site';
+import { liveHref, site } from '@/lib/site';
 import { CopyEmail } from './copy-email';
 
 const COLS = [
   { title: 'Product', links: [{ href: '/#workflow', label: 'How it works' }, { href: '/#types', label: 'Request types' }, { href: '/#ai', label: 'What the AI does' }, { href: '/#example', label: 'Illustrative example' }] },
-  { title: 'Try it', links: [{ href: '/demo', label: 'Demo mode' }, { href: '/signup', label: 'Register an organization' }, { href: '/login', label: 'Sign in' }, { href: '/forgot-password', label: 'Reset password' }] },
+  { title: 'Try it', links: [{ href: '/demo', label: 'Demo mode' }, { href: liveHref('/signup'), label: 'Register an organization' }, { href: liveHref('/login'), label: 'Sign in' }, { href: liveHref('/forgot-password'), label: 'Reset password' }] },
   { title: 'Trust', links: [{ href: '/privacy', label: 'Privacy notice (draft)' }, { href: '/terms', label: 'Terms of use (draft)' }, { href: '/#faq', label: 'Questions & limits' }] },
 ];
 
@@ -29,7 +29,7 @@ export function SiteFooter() {
               </div>
             </div>
             <div className="grid gap-3">
-              <Link href="/signup" className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-3 pr-4 hover:bg-white/[0.07]">
+              <Link href={liveHref('/signup')} className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-3 pr-4 hover:bg-white/[0.07]">
                 <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-600 shadow-[0_8px_20px_-8px_rgba(21,126,252,.9)]">
                   <KeyRound className="h-5 w-5" aria-hidden />
                 </span>
@@ -58,7 +58,7 @@ export function SiteFooter() {
                 <p className="t-caption text-white/45">{c.title}</p>
                 <ul className="mt-3 space-y-2">
                   {c.links.map((l) => (
-                    <li key={l.href + l.label}>
+                    <li key={l.label}>
                       <Link href={l.href} className="text-[15px] text-white/80 hover:text-white">
                         {l.label}
                       </Link>

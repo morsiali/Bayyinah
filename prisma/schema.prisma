@@ -142,7 +142,7 @@ model Case {
   id                    String    @id @default(cuid())
   orgId                 String
   supplierId            String
-  caseNumber            String    @unique
+  caseNumber            String    // unique within the organization (see @@unique below)
   requestType           String    // INVOICE_PAYMENT | BANK_ACCOUNT_CHANGE | NEW_BENEFICIARY
   status                String    @default("DRAFT")
   expectedAmount        String?   // decimal string, never float
@@ -166,6 +166,7 @@ model Case {
   reviews               Review[]
   agentRuns             AgentRun[]
 
+  @@unique([orgId, caseNumber])
   @@index([orgId, status])
   @@index([supplierId])
 }

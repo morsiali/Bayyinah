@@ -7,6 +7,7 @@ import { HighlightedText, toneFor } from '@/components/evidence';
 import { DEMO_SCENARIOS, type DemoScenario } from '@/lib/demo-data';
 import { DECISION_LABELS, FIELD_LABELS, OUTCOME_LABELS, REQUEST_TYPE_LABELS, isHighRisk, type CaseStatus } from '@/lib/constants';
 import { maskAccount } from '@/lib/iban';
+import { liveHref } from '@/lib/site';
 
 type Persona = 'preparer' | 'reviewer' | 'admin';
 const PEOPLE: Record<Persona, { name: string; role: string }> = {
@@ -67,7 +68,7 @@ export function DemoApp({ initialScenario, initialPersona }: { initialScenario: 
             <Button variant="secondary" size="sm" onClick={reset}>
               <RotateCcw className="h-3.5 w-3.5" aria-hidden /> Reset demo
             </Button>
-            <Link href="/signup" className="hidden text-[13px] font-semibold text-brand-700 hover:underline md:inline">Switch to live mode</Link>
+            <Link href={liveHref('/signup')} className="hidden text-[13px] font-semibold text-brand-700 hover:underline md:inline">Switch to live mode</Link>
           </div>
         </div>
       </header>

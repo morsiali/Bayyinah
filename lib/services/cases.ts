@@ -28,9 +28,10 @@ async function nextCaseNumber(tx: Tx, orgId: string) {
   const prefix = org.slug.replace(/[^a-z0-9]/gi, '').slice(0, 3).toUpperCase().padEnd(3, 'X');
   const year = new Date().getFullYear();
   const count = await tx.case.count({ where: { orgId } });
+  // Numbers are unique per organization, so gaps only come from deleted rows; a few retries suffice.
   for (let i = 1; i < 50; i++) {
     const n = `BAY-${prefix}-${year}-${String(count + i).padStart(4, '0')}`;
-    if (!(await tx.case.findUnique({ where: { caseNumber: n }, select: { id: true } }))) return n;
+    if (!(await tx.case.findUnique({ where: { orgId_caseNumber: { orgId, caseNumber: n } }, select: { id: true } }))) return n;
   }
   throw new AppError('CONFLICT', 'Could not allocate a case number. Try again.');
 }

@@ -406,3 +406,19 @@ describe('Retention', () => {
     expect(await prisma.auditEvent.count({ where: { orgId: o.org.id, action: 'retention.evidence_purged' } })).toBe(1);
   });
 });
+
+describe('Case numbers', () => {
+  it('are unique per organization, so organizations with similar names never collide', async () => {
+    const orgs = [await mkOrg(), await mkOrg(), await mkOrg()];
+    const numbers: string[] = [];
+    for (const o of orgs) {
+      const a = await createCase(o.preparer, o.org.id, { supplierId: o.supplier.id, requestType: 'INVOICE_PAYMENT' });
+      const b = await createCase(o.preparer, o.org.id, { supplierId: o.supplier.id, requestType: 'INVOICE_PAYMENT' });
+      expect(a.caseNumber).toMatch(/-0001$/);
+      expect(b.caseNumber).toMatch(/-0002$/);
+      numbers.push(a.caseNumber);
+    }
+    // Same prefix ("ORG") in every test organization, and every first case is still 0001.
+    expect(new Set(numbers).size).toBe(1);
+  });
+});

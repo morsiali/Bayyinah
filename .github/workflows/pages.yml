@@ -1,0 +1,47 @@
+name: Publish public site (GitHub Pages)
+
+# Builds the static showcase — website, request check and Demo Mode — and publishes it to the
+# gh-pages branch, served at https://morsiali.github.io/Bayyinah/.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+
+      - run: npx prisma generate
+
+      - name: Build static site
+        run: node scripts/build-static.mjs site-out
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}
+
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site-out
+          publish_branch: gh-pages
+          force_orphan: true
+          commit_message: 'Publish public site'

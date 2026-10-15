@@ -25,3 +25,22 @@ export function DocPage({ title, updated, children }: { title: string; updated: 
     </>
   );
 }
+
+/** Same chrome as DocPage, without the legal-draft notice and prose styling. */
+export function DocPageShell({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
+  return (
+    <>
+      <div className="px-2 pt-2 md:px-3 md:pt-3">
+        <div className="panel-hero">
+          <SiteHeader />
+          <div className="relative mx-auto max-w-[1240px] px-5 pb-14 pt-10 md:px-8">
+            <h1 className="t-display text-[clamp(2.4rem,5vw,4rem)]">{title}</h1>
+            {subtitle && <p className="t-lead mt-3 max-w-2xl">{subtitle}</p>}
+          </div>
+        </div>
+      </div>
+      <main id="main" className="mx-auto max-w-[1240px] px-5 py-16 md:px-8">{children}</main>
+      <SiteFooter />
+    </>
+  );
+}

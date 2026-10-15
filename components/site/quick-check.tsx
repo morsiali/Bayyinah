@@ -6,6 +6,7 @@ import { Button, SeverityBadge, cx } from '@/components/ui';
 import { HighlightedText, toneFor } from '@/components/evidence';
 import { analyzeLocally } from '@/lib/analysis/local-analyzer';
 import { runRules } from '@/lib/analysis/rules';
+import { liveHref } from '@/lib/site';
 import { FIELD_LABELS, REQUEST_TYPE_LABELS, SEVERITY_RANK, type RequestType, type Severity } from '@/lib/constants';
 
 const TYPES: { value: RequestType; icon: typeof FileText; hint: string }[] = [
@@ -176,7 +177,7 @@ export function QuickCheck() {
             </Button>
           )}
           {step === 2 && (
-            <Link href="/signup" className="inline-flex h-10 items-center gap-2 rounded-full bg-navy px-5 text-[14px] font-semibold text-white hover:bg-navy-800">
+            <Link href={liveHref('/signup')} className="inline-flex h-10 items-center gap-2 rounded-full bg-navy px-5 text-[14px] font-semibold text-white hover:bg-navy-800">
               Run the full workflow
             </Link>
           )}

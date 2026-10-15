@@ -7,6 +7,7 @@ import { LinkButton, Pill, SectionTitle, SeverityBadge, Ltr, cx } from '@/compon
 import { HighlightedText, toneFor } from '@/components/evidence';
 import { DEMO_SCENARIOS } from '@/lib/demo-data';
 import { REQUEST_TYPE_LABELS } from '@/lib/constants';
+import { liveHref } from '@/lib/site';
 
 const SIGNALS = [
   'IBAN checksum',
@@ -94,7 +95,7 @@ export default function HomePage() {
                 For the moment an <strong className="font-semibold text-ink">invoice</strong>, a <strong className="font-semibold text-ink">bank account change</strong> or a <strong className="font-semibold text-ink">new beneficiary</strong> lands in your inbox: compare it with what you know, verify it with a person you trust, and record who decided — and why.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-3">
-                <LinkButton href="/signup" size="lg" arrow>
+                <LinkButton href={liveHref('/signup')} size="lg" arrow>
                   Register your organization
                 </LinkButton>
                 <LinkButton href="/demo" size="lg" variant="secondary">
@@ -226,7 +227,7 @@ export default function HomePage() {
             </h2>
             <p className="t-lead mt-4 max-w-xl">The workflow is the product. Each step unlocks only when the one before it is complete, and each is done by a person with the right role.</p>
           </div>
-          <LinkButton href="/signup" arrow className="self-start md:self-auto">
+          <LinkButton href={liveHref('/signup')} arrow className="self-start md:self-auto">
             Start a live case
           </LinkButton>
         </div>

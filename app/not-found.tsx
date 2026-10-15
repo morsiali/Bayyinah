@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Logo, LinkButton } from '@/components/ui';
+import { liveHref } from '@/lib/site';
 
 export default function NotFound() {
   return (
@@ -12,7 +13,7 @@ export default function NotFound() {
         <p className="t-lead relative mt-4 max-w-md">The link may be mistyped, or the record belongs to an organization you are not a member of.</p>
         <div className="relative mt-8 flex flex-wrap justify-center gap-3">
           <LinkButton href="/" variant="secondary">Back to the homepage</LinkButton>
-          <LinkButton href="/app" arrow>Open your workspace</LinkButton>
+          <LinkButton href={liveHref('/app')} arrow>Open your workspace</LinkButton>
         </div>
       </div>
     </div>

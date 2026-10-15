@@ -6,7 +6,7 @@ import { Toaster } from 'sonner';
 export const metadata: Metadata = {
   title: { default: 'Bayyinah | بيّنة — evidence-backed payment decisions', template: '%s · Bayyinah' },
   description: 'Bayyinah helps small businesses in the UAE verify invoice payments, bank account changes and new beneficiaries — and record an evidence-backed human decision.',
-  icons: { icon: '/favicon.svg' },
+  icons: { icon: `${process.env.NEXT_PUBLIC_BASE_PATH || ''}/favicon.svg` },
   metadataBase: new URL(process.env.APP_URL || 'http://localhost:3000'),
 };
 

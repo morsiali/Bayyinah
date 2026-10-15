@@ -10,6 +10,15 @@ A verification workflow for small businesses in the UAE: invoice payments, suppl
 
 ---
 
+## Live links
+
+| What | Link |
+|---|---|
+| Public website, request check and Demo Mode (GitHub Pages) | **https://morsiali.github.io/Bayyinah/** |
+| Full live app with sign-in, cases and AI (GitHub Codespaces) | **https://codespaces.new/morsiali/Bayyinah?quickstart=1** |
+
+The Pages site is static: sign-in and workspaces need the server, so their links there lead to a page explaining how to open the full app. It is rebuilt automatically on every push to `main`.
+
 ## Run it on GitHub (nothing to install)
 
 1. Click **Open in GitHub Codespaces** above (or **Code → Codespaces → Create codespace on main**).
@@ -106,6 +115,7 @@ See `.env.example`. Key settings: `DATABASE_URL`, `AUTH_SECRET`, `APP_URL`, `STO
 | `npm run retention` | Apply each organization's retention period (schedule daily) |
 | `npm test` | Unit + integration tests (Vitest, real SQLite test database) |
 | `npm run test:e2e` | Browser tests (Playwright): link crawler + full live workflow |
+| `node scripts/build-static.mjs` | Build the static public site (website + Demo Mode) into `site-out/` |
 | `npm run eval` | Run the labeled Arabic/English AI evaluation set against the configured provider |
 
 ## Documentation

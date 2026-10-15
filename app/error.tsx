@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { Button, Notice } from '@/components/ui';
+import { liveHref } from '@/lib/site';
 
 export default function ErrorPage({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
@@ -11,7 +12,7 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
       </Notice>
       <div className="mt-6 flex gap-3">
         <Button onClick={reset}>Try again</Button>
-        <Link href="/app" className="inline-flex h-10 items-center rounded-full px-4 font-semibold text-ink-soft hover:text-ink">Go to workspace</Link>
+        <Link href={liveHref('/app')} className="inline-flex h-10 items-center rounded-full px-4 font-semibold text-ink-soft hover:text-ink">Go to workspace</Link>
       </div>
     </div>
   );
