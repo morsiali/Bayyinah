@@ -77,7 +77,7 @@ export function VerifyForm({ orgId, caseId, taskId, revision, userName, defaultC
         <textarea id="notes" rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} className="field-input" />
       </Field>
       <Field label={`${t('Evidence attachment')} — ${t('optional')}`} htmlFor="att" hint={t('PDF, PNG or JPEG up to 10 MB, e.g. a signed confirmation letter.')}>
-        <input id="att" type="file" accept="application/pdf,image/png,image/jpeg" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="block text-[14px] file:me-3 file:border file:border-line-strong file:bg-white file:px-3 file:py-1.5 file:text-[13px] file:font-semibold" />
+        <input id="att" type="file" accept="application/pdf,image/png,image/jpeg" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="block w-full max-w-full text-[13px] file:me-3 file:border file:border-line-strong file:bg-white file:px-3 file:py-1.5 file:text-[13px] file:font-semibold" />
       </Field>
       <label className="flex items-start gap-3 border border-line bg-mist p-3.5 text-[14px]">
         <input type="checkbox" checked={attest} onChange={(e) => setAttest(e.target.checked)} className="mt-1 h-4 w-4 accent-[#6d5aff]" />
