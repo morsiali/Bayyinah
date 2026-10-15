@@ -1,0 +1,21 @@
+{
+  "name": "Bayyinah",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "hostRequirements": { "cpus": 2, "memory": "4gb" },
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "Bayyinah", "onAutoForward": "openBrowser" }
+  },
+  "containerEnv": {
+    "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "1",
+    "NEXT_TELEMETRY_DISABLED": "1"
+  },
+  "postCreateCommand": "npm ci && npm run setup && npm run build",
+  "postAttachCommand": {
+    "app": "npm start -- -p 3000"
+  },
+  "customizations": {
+    "codespaces": { "openFiles": ["README.md"] },
+    "vscode": { "extensions": ["Prisma.prisma", "bradlc.vscode-tailwindcss"] }
+  }
+}

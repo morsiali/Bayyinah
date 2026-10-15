@@ -1,0 +1,13 @@
+services:
+  bayyinah:
+    build: .
+    ports: ["3000:3000"]
+    env_file: .env
+    environment:
+      DATABASE_URL: "file:/data/bayyinah.db"
+      STORAGE_DIR: /data/storage
+      SHOW_DEMO_ACCOUNTS: "false"
+    volumes: ["bayyinah-data:/data"]
+    restart: unless-stopped
+volumes:
+  bayyinah-data:

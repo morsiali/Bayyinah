@@ -1,0 +1,444 @@
+// Bayyinah | بيّنة — data model
+// Local default: SQLite (zero setup). For production PostgreSQL, change `provider`
+// to "postgresql" and point DATABASE_URL at your server (see docs/OPERATIONS.md).
+// Every business record carries `orgId`; all queries in lib/ are scoped by it.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────── Identity ─────────────────────────
+
+model User {
+  id             String    @id @default(cuid())
+  name           String
+  email          String    @unique
+  passwordHash   String
+  sessionVersion Int       @default(0) // bumped on password reset → revokes sessions
+  lastLoginAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  memberships    Membership[]
+  platformAdmin  PlatformAdminMembership?
+  resetTokens    PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  issuedBy  String?   // null = self-service request; otherwise admin user id
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ───────────────────────── Organizations ─────────────────────────
+
+model Organization {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  status        String   @default("ACTIVE") // ACTIVE | SUSPENDED
+  retentionDays Int      @default(365)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  memberships   Membership[]
+  invitations   OrganizationInvitation[]
+  suppliers     Supplier[]
+  cases         Case[]
+  auditEvents   AuditEvent[]
+}
+
+model Membership {
+  id        String   @id @default(cuid())
+  orgId     String
+  userId    String
+  roles     String   // comma-separated: ORG_ADMIN,PREPARER,REVIEWER
+  isActive  Boolean  @default(true)
+  invitedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, userId])
+  @@index([userId])
+}
+
+model OrganizationInvitation {
+  id        String    @id @default(cuid())
+  orgId     String
+  email     String
+  roles     String
+  tokenHash String    @unique
+  invitedBy String
+  expiresAt DateTime
+  usedAt    DateTime?
+  usedBy    String?
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId])
+}
+
+// ───────────────────────── Suppliers ─────────────────────────
+
+model Supplier {
+  id                      String    @id @default(cuid())
+  orgId                   String
+  name                    String
+  expectedBeneficiaryName String?
+  referenceIban           String?
+  referenceBankAccount    String?
+  recordedEmail           String?
+  recordedPhone           String?
+  usualCurrency           String?
+  referenceSource         String?
+  reviewStatus            String    @default("PENDING_REVIEW") // PENDING_REVIEW | REVIEWED
+  reviewedBy              String?
+  reviewedAt              DateTime?
+  currentVersion          Int       @default(1)
+  isActive                Boolean   @default(true)
+  createdBy               String
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  org                     Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  versions                SupplierVersion[]
+  cases                   Case[]
+
+  @@index([orgId])
+}
+
+model SupplierVersion {
+  id            String   @id @default(cuid())
+  supplierId    String
+  orgId         String
+  versionNumber Int
+  snapshot      Json
+  changedBy     String
+  changeReason  String
+  createdAt     DateTime @default(now())
+  supplier      Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  @@unique([supplierId, versionNumber])
+  @@index([orgId])
+}
+
+// ───────────────────────── Cases ─────────────────────────
+
+model Case {
+  id                    String    @id @default(cuid())
+  orgId                 String
+  supplierId            String
+  caseNumber            String    @unique
+  requestType           String    // INVOICE_PAYMENT | BANK_ACCOUNT_CHANGE | NEW_BENEFICIARY
+  status                String    @default("DRAFT")
+  expectedAmount        String?   // decimal string, never float
+  expectedCurrency      String?
+  note                  String?
+  currentInputVersionId String?
+  revision              Int       @default(1) // bumped on every material change; stale reviews rejected
+  createdBy             String
+  closedAt              DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  org                   Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  supplier              Supplier     @relation(fields: [supplierId], references: [id])
+  inputVersions         CaseInputVersion[]
+  sourceDocuments       SourceDocument[]
+  analyses              Analysis[]
+  findings              Finding[]
+  corrections           FieldCorrection[]
+  verificationTasks     VerificationTask[]
+  verificationResults   VerificationResult[]
+  reviews               Review[]
+  agentRuns             AgentRun[]
+
+  @@index([orgId, status])
+  @@index([supplierId])
+}
+
+model CaseInputVersion {
+  id                    String   @id @default(cuid())
+  caseId                String
+  orgId                 String
+  versionNumber         Int
+  supplierVersionNumber Int
+  supplierSnapshot      Json
+  reason                String
+  isCurrent             Boolean  @default(true)
+  createdBy             String
+  createdAt             DateTime @default(now())
+  case                  Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@unique([caseId, versionNumber])
+}
+
+model SourceDocument {
+  id                 String   @id @default(cuid())
+  caseId             String
+  orgId              String
+  caseInputVersionId String
+  kind               String   // PASTED_TEXT | PDF
+  label              String?
+  fileName           String?
+  mimeType           String?
+  storageKey         String?
+  sizeBytes          Int?
+  sha256             String?
+  rawText            String?
+  extractionStatus   String   // COMPLETED | FAILED
+  extractionError    String?
+  uploadedBy         String
+  createdAt          DateTime @default(now())
+  case               Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([caseId])
+}
+
+model Analysis {
+  id                  String    @id @default(cuid())
+  caseId              String
+  orgId               String
+  caseInputVersionId  String
+  provider            String
+  model               String
+  schemaVersion       String
+  status              String    // RUNNING | COMPLETED | FAILED
+  detectedRequestType String?
+  summary             String?
+  extractedFields     Json?     // as produced by the analyzer
+  effectiveFields     Json?     // after human corrections
+  missingInformation  Json?
+  suggestedQuestions  Json?
+  rejectedCitations   Int       @default(0)
+  sourceCount         Int       @default(0)
+  usage               Json?
+  errorRef            String?
+  errorMessage        String?
+  createdBy           String
+  createdAt           DateTime  @default(now())
+  completedAt         DateTime?
+  case                Case      @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  findings            Finding[]
+
+  @@index([caseId])
+}
+
+model Finding {
+  id                 String   @id @default(cuid())
+  caseId             String
+  orgId              String
+  analysisId         String
+  caseInputVersionId String
+  source             String   // RULE | AI
+  ruleId             String?
+  category           String
+  severity           String   // info | review | warning | critical
+  explanation        String
+  evidenceQuote      String?
+  sourceDocumentId   String?
+  fieldName          String?
+  referenceValue     String?
+  submittedValue     String?
+  createdAt          DateTime @default(now())
+  case               Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  analysis           Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@index([caseId])
+  @@index([analysisId])
+}
+
+model FieldCorrection {
+  id                 String   @id @default(cuid())
+  caseId             String
+  orgId              String
+  analysisId         String
+  caseInputVersionId String
+  sourceDocumentId   String?
+  fieldName          String
+  originalValue      String?
+  correctedValue     String?
+  note               String
+  correctedBy        String
+  createdAt          DateTime @default(now())
+  case               Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([caseId])
+}
+
+model VerificationTask {
+  id                 String   @id @default(cuid())
+  caseId             String
+  orgId              String
+  caseInputVersionId String
+  taskType           String   // CALL_REFERENCE_PHONE | EMAIL_REFERENCE_ADDRESS | CONFIRM_INVOICE_DETAILS | ESTABLISH_INDEPENDENT_CHANNEL
+  requirement        String
+  description        String
+  suggestedChannel   String?
+  channelSource      String?
+  status             String   @default("OPEN") // OPEN | COMPLETED | SUPERSEDED
+  idempotencyKey     String?  @unique
+  agentRunId         String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  case               Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  results            VerificationResult[]
+
+  @@index([caseId])
+}
+
+model VerificationResult {
+  id                 String   @id @default(cuid())
+  taskId             String
+  caseId             String
+  orgId              String
+  caseInputVersionId String
+  requirementChecked String
+  channelUsed        String
+  channelSource      String
+  outcome            String   // CONFIRMED | NOT_CONFIRMED | INCONCLUSIVE | UNABLE_TO_COMPLETE
+  notes              String?
+  attachmentKey      String?
+  attachmentName     String?
+  performedBy        String
+  performedAt        DateTime @default(now())
+  task               VerificationTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  case               Case             @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([caseId])
+}
+
+model Review {
+  id                 String   @id @default(cuid())
+  caseId             String
+  orgId              String
+  caseInputVersionId String
+  caseRevision       Int
+  reviewerId         String
+  decision           String   // APPROVED | REJECTED | RETURNED | CLOSED_INCONCLUSIVE
+  rationale          String
+  createdAt          DateTime @default(now())
+  case               Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([caseId])
+}
+
+model AgentRun {
+  id                 String    @id @default(cuid())
+  caseId             String
+  orgId              String
+  caseInputVersionId String
+  initiatedBy        String
+  status             String    // RUNNING | COMPLETED | STOPPED | FAILED
+  stopReason         String?
+  waitingFor         String?
+  summary            String?
+  toolCallCount      Int       @default(0)
+  usage              Json?
+  startedAt          DateTime  @default(now())
+  endedAt            DateTime?
+  case               Case      @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  toolExecutions     ToolExecution[]
+
+  @@index([caseId])
+}
+
+model ToolExecution {
+  id              String   @id @default(cuid())
+  agentRunId      String
+  orgId           String
+  sequence        Int
+  toolName        String
+  input           Json?
+  output          Json?
+  status          String   // SUCCESS | REJECTED | ERROR
+  relatedRecordId String?
+  idempotencyRef  String?
+  durationMs      Int      @default(0)
+  executedAt      DateTime @default(now())
+  agentRun        AgentRun @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
+
+  @@index([agentRunId])
+}
+
+// ───────────────────────── Audit & platform ─────────────────────────
+
+model AuditEvent {
+  id                 String   @id @default(cuid())
+  orgId              String
+  actorId            String?
+  actorEmail         String?
+  action             String
+  entityType         String?
+  entityId           String?
+  changedFields      Json?
+  reason             String?
+  caseInputVersionId String?
+  agentRunId         String?
+  toolExecutionId    String?
+  createdAt          DateTime @default(now())
+  org                Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([orgId, createdAt])
+  @@index([entityType, entityId])
+}
+
+model PlatformAdminMembership {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  grantedBy String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PlatformAdminEvent {
+  id         String   @id @default(cuid())
+  actorId    String
+  actorEmail String
+  action     String
+  targetType String?
+  targetId   String?
+  details    Json?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model PlatformSetting {
+  key       String   @id
+  value     String
+  updatedBy String?
+  updatedAt DateTime @updatedAt
+}
+
+// Sanitized operational metadata about model calls (no document content).
+model ModelCallLog {
+  id           String   @id @default(cuid())
+  orgId        String?
+  purpose      String   // analysis | review_summary
+  provider     String
+  model        String
+  status       String   // SUCCESS | FAILED
+  errorCode    String?
+  errorRef     String?
+  durationMs   Int
+  inputTokens  Int?
+  outputTokens Int?
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+}

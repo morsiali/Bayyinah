@@ -1,0 +1,7 @@
+node_modules
+.next
+storage*
+prisma/*.db*
+.env
+test-results
+playwright-report

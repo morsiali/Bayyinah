@@ -1,0 +1,54 @@
+{
+  "name": "bayyinah",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bayyinah | بيّنة — turn a payment request into an evidence-backed decision.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "setup": "node scripts/setup.mjs",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "node scripts/reset-db.mjs",
+    "platform-admin": "tsx scripts/platform-admin.ts",
+    "retention": "tsx scripts/retention.ts",
+    "eval": "tsx scripts/eval.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@fontsource-variable/cairo": "5.3.0",
+    "@prisma/client": "6.19.3",
+    "bcryptjs": "2.4.3",
+    "clsx": "2.1.1",
+    "jose": "5.10.0",
+    "lucide-react": "0.577.0",
+    "next": "15.5.28",
+    "react": "19.1.10",
+    "react-dom": "19.1.10",
+    "server-only": "0.0.1",
+    "sonner": "1.7.4",
+    "unpdf": "1.8.1",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.56.1",
+    "@types/bcryptjs": "2.4.6",
+    "@types/node": "22.20.5",
+    "@types/react": "19.1.17",
+    "@types/react-dom": "19.1.11",
+    "autoprefixer": "10.4.21",
+    "postcss": "8.5.6",
+    "prisma": "6.19.3",
+    "tailwindcss": "3.4.19",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "vitest": "3.2.7"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}
