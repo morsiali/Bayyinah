@@ -2,8 +2,11 @@
 import { useState } from 'react';
 import { LogOut } from 'lucide-react';
 import { Button } from '@/components/ui';
+import { useT } from '@/components/i18n';
 
-export function LogoutButton({ redirectTo = '/', label = 'Sign out', compact }: { redirectTo?: string; label?: string; compact?: boolean }) {
+export function LogoutButton({ redirectTo = '/', label, compact }: { redirectTo?: string; label?: string; compact?: boolean }) {
+  const t = useT();
+  label = label ?? t('Sign out');
   const [loading, setLoading] = useState(false);
   return (
     <Button

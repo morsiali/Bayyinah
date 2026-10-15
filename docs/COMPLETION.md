@@ -6,7 +6,7 @@ Test environment: Linux container, Node 22, SQLite, Chromium (Playwright 1.56). 
 
 | Capability | Status | How tested | Dependency / remaining |
 |---|---|---|---|
-| Public website (purpose, users, request types, workflow, AI limits, labelled fictional example, privacy/terms) | IMPLEMENTED AND VERIFIED | E2E crawler: every reachable link, HTTP status, console errors, blank-page check | Legal review of draft privacy/terms |
+| Public website (purpose, users, request types, workflow, AI limits, labelled fictional example, privacy/terms), English and Arabic | IMPLEMENTED AND VERIFIED | E2E crawler: every reachable link, HTTP status, console errors, blank-page check | Legal review of draft privacy/terms |
 | In-browser request check on the homepage | IMPLEMENTED AND VERIFIED | E2E `public.spec` | — |
 | Registration, sign-in, sign-out, sessions | IMPLEMENTED AND VERIFIED | Integration + E2E live flow | — |
 | Password recovery | IMPLEMENTED AND VERIFIED (admin-issued link); self-service link is written to the server log | Integration (token single-use, sessions revoked) | No email delivery in this version — add an email provider to send self-service links |
@@ -35,12 +35,12 @@ Test environment: Linux container, Node 22, SQLite, Chromium (Playwright 1.56). 
 | Demo Mode (5 scenarios, 3 personas, reset, isolated) | IMPLEMENTED AND VERIFIED | E2E + static isolation test | — |
 | Docker deployment files | IMPLEMENTED BUT NOT VERIFIED | — | Docker not available in build environment |
 | Live deployment, domain, HTTPS | BLOCKED BY EXTERNAL CONFIGURATION | — | Needs your server/domain; steps in OPERATIONS.md |
-| Arabic interface with RTL | NOT IMPLEMENTED | — | UI is English (per project decision); Arabic content is accepted, analyzed and displayed with LTR isolation for identifiers |
+| Arabic interface with RTL (every page, server messages, reports, Demo Mode; language switch remembered per browser) | IMPLEMENTED AND VERIFIED | Unit: every interface string has an Arabic translation, placeholders match, rule/analyzer/agent/error messages translate; E2E: Arabic crawl as 4 identities (no English left, right-to-left, no overflow), Arabic workflow (signup → case → analysis → agent → verification), Arabic quick check and Demo Mode, phone layout | AI-written explanations stay in the language the model wrote them; user-entered text is shown as entered |
 | Backups/restore | Documented, NOT VERIFIED | — | Test restore before pilot |
 
 ## Known limitations
 
-- English interface only; Arabic request text is supported.
+- AI model explanations are shown in the language the model wrote them (English by default); all interface text, rule findings and server messages are translated.
 - No email sending (invitation and reset links are shared manually; self-service reset links go to the server log).
 - Login throttling is in-memory per process.
 - SQLite is suitable for a single-server pilot; use PostgreSQL for multiple instances.

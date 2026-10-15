@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { ZodError } from 'zod';
 import { AppError, newErrorRef } from '@/lib/errors';
+import { translateText, type Locale } from '@/lib/i18n/core';
+import { localeOf } from '@/lib/i18n/headers';
 
 /** Hosts this deployment answers on: the request host, any proxy-forwarded host, APP_URL and a GitHub Codespaces forward. */
 function allowedHosts(req: Request): Set<string> {
@@ -34,15 +36,17 @@ function checkOrigin(req: Request) {
   if (!allowedHosts(req).has(originHost)) throw new AppError('FORBIDDEN', 'Cross-site request rejected.');
 }
 
-export function errorResponse(e: unknown) {
-  if (e instanceof AppError) return NextResponse.json({ error: e.message, code: e.code, details: e.details ?? [] }, { status: e.status });
+/** Error body in the caller's interface language. Codes and references stay stable for support. */
+export function errorResponse(e: unknown, locale: Locale = 'en') {
+  const tr = (s: string) => translateText(locale, s);
+  if (e instanceof AppError) return NextResponse.json({ error: tr(e.message), code: e.code, details: (e.details ?? []).map(tr) }, { status: e.status });
   if (e instanceof ZodError) {
     const first = e.issues[0];
-    return NextResponse.json({ error: first?.message ?? 'Invalid input.', code: 'VALIDATION', details: e.issues.map((i) => i.message), field: first?.path.join('.') }, { status: 400 });
+    return NextResponse.json({ error: tr(first?.message ?? 'Invalid input.'), code: 'VALIDATION', details: e.issues.map((i) => tr(i.message)), field: first?.path.join('.') }, { status: 400 });
   }
   const ref = newErrorRef();
   console.error(`[api] ${ref}`, e instanceof Error ? `${e.name}: ${e.message}` : 'unknown error');
-  return NextResponse.json({ error: `Something went wrong on our side. Your saved work is unaffected. Reference ${ref}.`, code: 'INTERNAL', ref }, { status: 500 });
+  return NextResponse.json({ error: tr(`Something went wrong on our side. Your saved work is unaffected. Reference ${ref}.`), code: 'INTERNAL', ref }, { status: 500 });
 }
 
 type Handler<P> = (req: Request, params: P) => Promise<unknown>;
@@ -56,7 +60,7 @@ export function route<P = Record<string, string>>(fn: Handler<P>) {
       if (out instanceof Response) return out;
       return NextResponse.json(out ?? { ok: true });
     } catch (e) {
-      return errorResponse(e);
+      return errorResponse(e, localeOf(req));
     }
   };
 }

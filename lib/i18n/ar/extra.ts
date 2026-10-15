@@ -1,0 +1,22 @@
+// Arabic — composed sentences and remaining fragments.
+export const EXTRA: Record<string, string> = {
+  'Add the request as pasted text or a text-based PDF.': 'أضف الطلب كنص ملصق أو ملف PDF نصي.',
+  'Local rules analyzer (no AI provider configured)': 'محلل القواعد المحلي (لم يُعدّ مزوّد ذكاء اصطناعي)',
+  'All required details are present.': 'جميع البيانات المطلوبة موجودة.',
+  'No significant discrepancies were found by the rules or language analysis. This does not prove the request is authentic.': 'لم تجد القواعد أو التحليل اللغوي تباينات جوهرية. وهذا لا يثبت أن الطلب حقيقي.',
+  'All recorded requirements are met; a reviewer other than the creator must decide.': 'جميع المتطلبات المسجّلة مستوفاة، ويجب أن يقرر مراجِع غير المُنشئ.',
+  'no analysis summary.': 'لا يوجد ملخص للتحليل.',
+  'Submitted for review': 'أُرسلت للمراجعة',
+  'No selectable text was found. This looks like a scanned or image-only PDF. OCR is not supported — please paste the text of the request instead.': 'لم يُعثر على نص قابل للتحديد. يبدو أنه ملف PDF ممسوح ضوئياً أو مكوّن من صور فقط. التعرّف الضوئي على النص غير مدعوم — الصق نص الطلب بدلاً من ذلك.',
+  'The PDF could not be read. It may be encrypted or damaged. Please paste the text of the request instead.': 'تعذّرت قراءة ملف PDF، فقد يكون مشفراً أو تالفاً. الصق نص الطلب بدلاً من ذلك.',
+  'The model provider is rate-limiting requests.': 'مزوّد النموذج يقيّد عدد الطلبات حالياً.',
+  'The model provider rejected the API key.': 'رفض مزوّد النموذج مفتاح API.',
+  'The model call timed out.': 'انتهت مهلة استدعاء النموذج.',
+  'The model provider could not be reached.': 'تعذّر الوصول إلى مزوّد النموذج.',
+  'The provider API key is not set.': 'مفتاح API الخاص بالمزوّد غير مُعدّ.',
+  'No external model provider is configured.': 'لم يُعدّ أي مزوّد نماذج خارجي.',
+  'The model returned an empty response.': 'أعاد النموذج استجابة فارغة.',
+  'Unexpected model error.': 'خطأ غير متوقع في النموذج.',
+  'The model response did not contain JSON.': 'لم تحتوِ استجابة النموذج على JSON.',
+  'The model response was not valid JSON.': 'استجابة النموذج ليست JSON صالحاً.',
+};

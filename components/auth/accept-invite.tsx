@@ -3,8 +3,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Notice } from '@/components/ui';
 import { api, ApiError } from '@/lib/client';
+import { useT } from '@/components/i18n';
 
 export function AcceptInvite({ token }: { token: string }) {
+  const t = useT();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -24,12 +26,12 @@ export function AcceptInvite({ token }: { token: string }) {
             router.replace(`/app/${r.orgId}`);
             router.refresh();
           } catch (err) {
-            setError(err instanceof ApiError ? err.message : 'Could not accept the invitation.');
+            setError(err instanceof ApiError ? err.message : t('Could not accept the invitation.'));
             setLoading(false);
           }
         }}
       >
-        Accept invitation
+        {t('Accept invitation')}
       </Button>
     </div>
   );

@@ -3,7 +3,7 @@
 [![CI](https://github.com/morsiali/Bayyinah/actions/workflows/ci.yml/badge.svg)](https://github.com/morsiali/Bayyinah/actions/workflows/ci.yml)
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/morsiali/Bayyinah?quickstart=1)
 
-**Turn a payment request into an evidence-backed decision.**
+**Turn a payment request into an evidence-backed decision.** — **حوِّل طلب الدفع إلى قرار موثّق.**
 A verification workflow for small businesses in the UAE: invoice payments, supplier bank account changes and new beneficiaries — from the message you received to a reviewed, documented decision.
 
 > Bayyinah is a working name. It supports verification and decision documentation only. It does not execute payments, authorize transfers, prove account ownership or guarantee fraud detection.
@@ -14,8 +14,11 @@ A verification workflow for small businesses in the UAE: invoice payments, suppl
 
 | What | Link |
 |---|---|
-| Public website, request check and Demo Mode (GitHub Pages) | **https://morsiali.github.io/Bayyinah/** |
+| Public website, request check and Demo Mode — English (GitHub Pages) | **https://morsiali.github.io/Bayyinah/** |
+| Same, in Arabic — العربية | **https://morsiali.github.io/Bayyinah/ar/** |
 | Full live app with sign-in, cases and AI (GitHub Codespaces) | **https://codespaces.new/morsiali/Bayyinah?quickstart=1** |
+
+The whole interface is available in **English and Arabic (right-to-left)** — switch with the language button at the top of any page; the choice is remembered, and browsers set to Arabic open in Arabic.
 
 The Pages site is static: sign-in and workspaces need the server, so their links there lead to a page explaining how to open the full app. It is rebuilt automatically on every push to `main`.
 
@@ -96,6 +99,8 @@ components/          UI (design system in components/ui.tsx)
 prisma/schema.prisma data model (SQLite locally; PostgreSQL in production)
 ```
 
+- **Languages:** `lib/i18n` — English text is the key, Arabic lives in `lib/i18n/ar/*`; server messages with values are translated by patterns in `lib/i18n/ar-patterns.ts`. `tests/unit/i18n.test.ts` fails if any interface string lacks an Arabic translation.
+- **Design:** after penti.ai — DM Sans and JetBrains Mono for Latin text, Cairo for Arabic; tokens in `tailwind.config.ts` and `app/globals.css`.
 - **Auth:** email + password (bcrypt), signed HTTP-only session cookie (JWT via `jose`), sessions revoked on password reset.
 - **Storage:** private files under `STORAGE_DIR`, served only to members of the owning organization.
 - **AI:** set one API key in `.env`. Without a key, the deterministic local analyzer runs and is labelled as such everywhere — it is never presented as AI.

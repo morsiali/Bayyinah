@@ -2,15 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Bayyinah design tokens — layout language after wibify.de, type after the HBMSU system (Cairo). */
+/* Bayyinah design tokens — layout language after penti.ai. Latin: DM Sans + JetBrains Mono. Arabic: Cairo. */
 :root {
-  --canvas: #fbfbfa;
-  --ink: #09090b;
-  --brand: #157efc;
-  --navy: #0f1b2d;
-  --review: #b45309;
-  --danger: #c0262d;
-  --done: #15803d;
+  --canvas: #ffffff;
+  --ink: #0a0a14;
+  --brand: #6d5aff;
+  --navy: #0a0a14;
+  --review: #b26a00;
+  --danger: #e8334a;
+  --done: #04a76a;
 }
 
 @layer base {
@@ -25,21 +25,27 @@
     font-feature-settings: 'kern', 'liga';
   }
   ::selection {
-    background: #bfe2fe;
-    color: #09090b;
+    background: #d1c9ff;
+    color: #0a0a14;
   }
   :focus-visible {
     outline: 2px solid var(--brand);
     outline-offset: 2px;
-    border-radius: 6px;
   }
   /* Isolate identifiers (IBANs, emails, case numbers) so they read left-to-right in any context. */
   .ltr {
     direction: ltr;
     unicode-bidi: isolate;
   }
-  [dir='rtl'] {
-    text-align: right;
+  /* Arabic: Cairo first, no letter-spacing (it breaks joined letters), no case transforms, roomier lines. */
+  html[lang='ar'] body {
+    font-family: 'Cairo Variable', 'DM Sans Variable', Tahoma, sans-serif;
+  }
+  html[lang='ar'] *:not(.ltr):not(.ltr *) {
+    letter-spacing: 0 !important;
+  }
+  html[lang='ar'] .uppercase {
+    text-transform: none;
   }
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -54,68 +60,114 @@
 }
 
 @layer components {
-  /* Type scale (HBMSU): display 80/96, headline 40/48, subheading 22/28, body 16/26, caption 12/18 */
+  /* Type scale (penti): display 68/70 bold uppercase, headline 48/53 medium uppercase, lead 18/28, label 12 mono */
   .t-display {
-    font-size: clamp(2.6rem, 6.2vw, 5rem);
+    font-size: clamp(2.5rem, 5.2vw, 4.25rem);
     line-height: 1.02;
     font-weight: 700;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
   }
   .t-headline {
-    font-size: clamp(2rem, 4vw, 2.5rem);
-    line-height: 1.12;
-    font-weight: 700;
-    letter-spacing: -0.03em;
+    font-size: clamp(1.9rem, 3.6vw, 3rem);
+    line-height: 1.1;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    text-transform: uppercase;
   }
   .t-sub {
-    font-size: 1.375rem;
+    font-size: 1.25rem;
     line-height: 1.75rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
   .t-caption {
     font-size: 0.75rem;
     line-height: 1.125rem;
     font-weight: 500;
   }
+  .t-eyebrow {
+    @apply font-mono text-[12px] uppercase leading-[18px] tracking-label text-[#666];
+  }
   .t-lead {
     font-size: 1.125rem;
     line-height: 1.75rem;
-    color: #52525c;
+    color: #5a5a70;
+  }
+  html[lang='ar'] .t-display,
+  html[lang='ar'] .t-headline {
+    text-transform: none;
+  }
+  html[lang='ar'] .t-display {
+    line-height: 1.3;
+    font-size: clamp(2.2rem, 4.6vw, 3.75rem);
+  }
+  html[lang='ar'] .t-headline {
+    line-height: 1.35;
+    font-weight: 700;
+    font-size: clamp(1.75rem, 3.2vw, 2.6rem);
+  }
+  html[lang='ar'] .t-eyebrow {
+    font-family: 'Cairo Variable', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  html[lang='ar'] .btn {
+    font-size: 14px;
+    font-family: 'Cairo Variable', sans-serif;
   }
 
+  /* Hero: the penti blue → violet → green field */
   .panel-hero {
-    @apply relative overflow-hidden rounded-[28px] border border-line bg-white;
-    background-image: radial-gradient(120% 70% at 50% 120%, rgba(43, 154, 255, 0.38), rgba(43, 154, 255, 0.08) 45%, transparent 70%),
-      linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+    @apply relative overflow-hidden text-white;
+    background: radial-gradient(55% 75% at 0% 0%, #1ea2f7 0%, rgba(30, 162, 247, 0) 70%), radial-gradient(50% 70% at 100% 0%, #2be3b0 0%, rgba(43, 227, 176, 0) 70%),
+      radial-gradient(55% 70% at 30% 100%, #6d5aff 0%, rgba(109, 90, 255, 0) 70%), radial-gradient(50% 60% at 95% 85%, #06d98a 0%, rgba(6, 217, 138, 0) 70%),
+      linear-gradient(115deg, #2b7ee8 0%, #6d5aff 48%, #06d98a 100%);
   }
   .dot-field {
-    background-image: radial-gradient(rgba(21, 126, 252, 0.22) 1px, transparent 1.2px);
-    background-size: 14px 14px;
-    -webkit-mask-image: radial-gradient(80% 60% at 70% 100%, #000 10%, transparent 70%);
-    mask-image: radial-gradient(80% 60% at 70% 100%, #000 10%, transparent 70%);
+    background-image: radial-gradient(rgba(255, 255, 255, 0.35) 1px, transparent 1.2px);
+    background-size: 16px 16px;
+    -webkit-mask-image: radial-gradient(70% 60% at 80% 100%, #000 10%, transparent 70%);
+    mask-image: radial-gradient(70% 60% at 80% 100%, #000 10%, transparent 70%);
   }
   .panel-dark {
-    @apply relative overflow-hidden rounded-[28px] text-white;
-    background: radial-gradient(70% 55% at 50% 0%, rgba(21, 126, 252, 0.22), transparent 70%), linear-gradient(180deg, #0f1b2d 0%, #070c16 100%);
+    @apply relative overflow-hidden text-white;
+    background: #070707;
+  }
+  .panel-mist {
+    background: #f8f8fc;
   }
 
   .card {
-    @apply rounded-2xl border border-line bg-white shadow-card;
+    @apply rounded-md border border-line bg-white;
   }
   .card-flat {
-    @apply rounded-2xl border border-line bg-white;
+    @apply rounded-md border border-line bg-white;
+  }
+  .float-panel {
+    @apply rounded-3xl border border-white/70 bg-white text-ink shadow-lift;
   }
 
+  /* Square tag with a mono label */
   .pill {
-    @apply inline-flex items-center gap-2 rounded-full border border-line bg-white px-3 py-1 text-[13px] font-medium text-ink-soft shadow-pill;
+    @apply inline-flex items-center gap-2 rounded-sm border border-line-strong bg-white px-2.5 py-1 font-mono text-[11.5px] font-medium uppercase tracking-[0.06em] text-ink-soft;
+  }
+  html[lang='ar'] .pill {
+    font-family: 'Cairo Variable', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+
+  /* Left accent bar (flips to the right in Arabic) */
+  .bar-s {
+    @apply border-s-[3px];
   }
 
   .field-input {
-    @apply w-full rounded-xl border border-line bg-zinc-50 px-3.5 py-2.5 text-[15px] text-ink placeholder:text-ink-faint transition-colors;
+    @apply w-full rounded-md border border-line-strong bg-white px-3.5 py-2.5 text-[15px] text-ink placeholder:text-ink-faint transition-colors;
   }
   .field-input:focus {
-    @apply border-brand-500 bg-white outline-none ring-4 ring-brand-100;
+    @apply border-brand-600 bg-white outline-none ring-2 ring-brand-100;
   }
   .field-input[aria-invalid='true'] {
     @apply border-red-400 ring-red-100;
@@ -127,23 +179,23 @@
 
   /* Evidence marks — the visual signature: exact quotes highlighted where they occur in the source. */
   mark.evidence {
-    background: linear-gradient(transparent 55%, rgba(21, 126, 252, 0.22) 55%);
+    background: linear-gradient(transparent 55%, rgba(109, 90, 255, 0.24) 55%);
     color: inherit;
     border-radius: 2px;
     padding: 0 1px;
   }
   mark.evidence-warn {
-    background: linear-gradient(transparent 55%, rgba(192, 38, 45, 0.18) 55%);
+    background: linear-gradient(transparent 55%, rgba(232, 51, 74, 0.2) 55%);
     color: inherit;
   }
   mark.evidence-review {
-    background: linear-gradient(transparent 55%, rgba(245, 158, 11, 0.28) 55%);
+    background: linear-gradient(transparent 55%, rgba(245, 166, 35, 0.32) 55%);
     color: inherit;
   }
   mark.evidence-active {
-    background: rgba(21, 126, 252, 0.28);
-    outline: 2px solid rgba(21, 126, 252, 0.45);
-    border-radius: 3px;
+    background: rgba(109, 90, 255, 0.24);
+    outline: 2px solid rgba(109, 90, 255, 0.5);
+    border-radius: 2px;
   }
 }
 

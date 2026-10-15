@@ -5,6 +5,8 @@ import { getOrgContext, listMyOrgs } from '@/lib/services/access';
 import { AppShell } from '@/components/app/shell';
 import { AppError } from '@/lib/errors';
 import { Notice, LinkButton } from '@/components/ui';
+import { getT } from '@/lib/i18n/server';
+import { translateText } from '@/lib/i18n/core';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,11 +23,12 @@ export default async function OrgLayout({ children, params }: { children: ReactN
     );
   } catch (e) {
     if (e instanceof AppError && e.code === 'SUSPENDED') {
+      const { locale, t } = await getT();
       return (
         <AppShell user={user} orgs={orgs} isPlatformAdmin={user.isPlatformAdmin}>
           <div className="mx-auto max-w-xl space-y-4">
-            <Notice tone="review" title="Organization suspended">{e.message}</Notice>
-            <LinkButton href="/app" variant="secondary">Back to your organizations</LinkButton>
+            <Notice tone="review" title={t('Organization suspended')}>{translateText(locale, e.message)}</Notice>
+            <LinkButton href="/app" variant="secondary">{t('Back to your organizations')}</LinkButton>
           </div>
         </AppShell>
       );

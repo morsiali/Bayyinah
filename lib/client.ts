@@ -1,4 +1,8 @@
 'use client';
+import { translateText } from '@/lib/i18n/core';
+
+/** Interface language of the current page (set on <html lang>). */
+const tr = (s: string) => (typeof document !== 'undefined' && document.documentElement.lang === 'ar' ? translateText('ar', s) : s);
 
 export class ApiError extends Error {
   constructor(message: string, public code?: string, public details: string[] = [], public field?: string) {
@@ -17,9 +21,9 @@ export async function api<T = any>(path: string, opts: { method?: string; body?:
       credentials: 'same-origin',
     });
   } catch {
-    throw new ApiError('Could not reach the server. Check your connection and try again.', 'NETWORK');
+    throw new ApiError(tr('Could not reach the server. Check your connection and try again.'), 'NETWORK');
   }
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new ApiError(data?.error ?? `Request failed (${res.status}).`, data?.code, data?.details ?? [], data?.field);
+  if (!res.ok) throw new ApiError(tr(data?.error ?? `Request failed (${res.status}).`), data?.code, (data?.details ?? []).map(tr), data?.field);
   return data as T;
 }

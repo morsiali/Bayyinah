@@ -12,7 +12,7 @@ import { prisma } from '@/lib/db';
 import { AppError } from '@/lib/errors';
 import { audit } from '@/lib/audit';
 import { getSettings } from '@/lib/settings';
-import { REQUEST_TYPE_LABELS, TASK_TYPE_LABELS, isEditable, type ExtractedFields, type RequestType } from '@/lib/constants';
+import { OUTCOME_LABELS, REQUEST_TYPE_LABELS, TASK_TYPE_LABELS, isEditable, type ExtractedFields, type RequestType, type VerificationOutcome } from '@/lib/constants';
 import { maskAccount } from '@/lib/iban';
 import { runRules, type SupplierSnapshot } from '@/lib/analysis/rules';
 import { loadCase, requireRole, type Actor } from './access';
@@ -229,10 +229,11 @@ const TOOL_IMPL: Record<AgentTool, (ctx: RunCtx, c: CaseRow, input: any) => Prom
     lines.push(`${REQUEST_TYPE_LABELS[c.requestType as RequestType]} — ${a?.summary ?? 'no analysis summary.'}`);
     lines.push(sig.length ? `${sig.length} significant finding${sig.length > 1 ? 's' : ''}: ${[...new Set(sig.map((f) => f.category.replace(/_/g, ' ')))].join(', ')}.` : 'No significant discrepancies were found by the rules or language analysis. This does not prove the request is authentic.');
     const done = tasks.filter((t) => t.status === 'COMPLETED');
-    if (tasks.length) lines.push(`Independent verification: ${done.length} of ${tasks.length} task${tasks.length > 1 ? 's' : ''} recorded${done.length ? ` (${done.flatMap((t) => t.results.map((r) => r.outcome.toLowerCase().replace(/_/g, ' '))).join(', ')})` : ''}.`);
+    if (tasks.length) lines.push(`Independent verification: ${done.length} of ${tasks.length} task${tasks.length > 1 ? 's' : ''} recorded${done.length ? ` (${done.flatMap((t) => t.results.map((r) => OUTCOME_LABELS[r.outcome as VerificationOutcome] ?? r.outcome)).join(', ')})` : ''}.`);
     const unmet = reqs.filter((r) => !r.met && r.key !== 'AGENT');
-    lines.push(unmet.length ? `Outstanding: ${unmet.map((r) => r.label.toLowerCase()).join('; ')}.` : 'All recorded requirements are met; a reviewer other than the creator must decide.');
-    const summary = lines.join(' ');
+    lines.push(unmet.length ? `Outstanding: ${unmet.map((r) => r.label).join('; ')}.` : 'All recorded requirements are met; a reviewer other than the creator must decide.');
+    // One statement per line, so each can be shown in the reader's language.
+    const summary = lines.join('\n');
     return { output: { summary } };
   },
 };

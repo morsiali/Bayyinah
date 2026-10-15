@@ -1,23 +1,28 @@
 import Link from 'next/link';
 import clsx from 'clsx';
-import { ArrowRight, AlertTriangle, CheckCircle2, Info, Loader2, OctagonAlert } from 'lucide-react';
+import { ArrowUpRight, AlertTriangle, CheckCircle2, Info, Loader2, OctagonAlert } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
-import { SEVERITY_LABELS, STATUS_LABELS, type CaseStatus, type Severity } from '@/lib/constants';
 
 export const cx = clsx;
+export { StatusBadge, SeverityBadge, KeyValue } from './ui-i18n';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'blue';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'blue' | 'light' | 'outline-light';
 type Size = 'sm' | 'md' | 'lg';
 
-const base = 'inline-flex items-center justify-center gap-2 rounded-full font-semibold tracking-[-0.01em] transition-[background,box-shadow,color,transform] active:translate-y-px disabled:pointer-events-none disabled:opacity-50 whitespace-nowrap';
+const base = 'btn inline-flex items-center justify-center gap-2 rounded-lg font-bold uppercase tracking-[0.08em] transition-[background,border-color,color,transform] active:translate-y-px disabled:pointer-events-none disabled:opacity-50 whitespace-nowrap';
 const variants: Record<Variant, string> = {
-  primary: 'bg-navy text-white shadow-[0_1px_0_rgba(255,255,255,.12)_inset,0_6px_16px_-6px_rgba(15,27,45,.6)] hover:bg-navy-800',
-  blue: 'bg-brand-600 text-white shadow-[0_6px_16px_-6px_rgba(21,126,252,.7)] hover:bg-brand-700',
-  secondary: 'bg-white text-ink border border-line shadow-pill hover:border-line-strong hover:bg-zinc-50',
-  ghost: 'text-ink-soft hover:text-ink hover:bg-zinc-100',
-  danger: 'bg-white text-[color:var(--danger)] border border-red-200 hover:bg-red-50',
+  primary: 'bg-navy text-white hover:bg-navy-700',
+  blue: 'bg-brand-600 text-white hover:bg-brand-700',
+  secondary: 'bg-white text-ink border border-line-strong hover:border-ink',
+  ghost: 'text-ink-soft hover:text-ink hover:bg-mist',
+  danger: 'bg-white text-[color:var(--danger)] border border-red-200 hover:border-red-400 hover:bg-red-50',
+  light: 'bg-white text-ink hover:bg-white/90',
+  'outline-light': 'border border-white/60 text-white hover:bg-white/10',
 };
-const sizes: Record<Size, string> = { sm: 'h-8 px-3.5 text-[13px]', md: 'h-10 px-5 text-[14px]', lg: 'h-12 px-6 text-[15px]' };
+const sizes: Record<Size, string> = { sm: 'h-8 px-3.5 text-[11.5px]', md: 'h-10 px-5 text-[12px]', lg: 'h-12 px-6 text-[12.5px]' };
+
+/** Directional icons point the other way in Arabic. */
+export const flipRtl = 'rtl:-scale-x-100';
 
 export function buttonClass(variant: Variant = 'primary', size: Size = 'md', className?: string) {
   return cx(base, variants[variant], sizes[size], className);
@@ -28,7 +33,7 @@ export function Button({ variant = 'primary', size = 'md', loading, arrow, class
     <button className={buttonClass(variant, size, className)} disabled={loading || rest.disabled} aria-busy={loading || undefined} {...rest}>
       {loading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
       {children}
-      {arrow && !loading && <ArrowRight className="h-4 w-4" aria-hidden />}
+      {arrow && !loading && <ArrowUpRight className={cx('h-4 w-4', flipRtl)} aria-hidden />}
     </button>
   );
 }
@@ -37,30 +42,31 @@ export function LinkButton({ href, variant = 'primary', size = 'md', arrow, clas
   return (
     <Link href={href} className={buttonClass(variant, size, className)} {...rest}>
       {children}
-      {arrow && <ArrowRight className="h-4 w-4" aria-hidden />}
+      {arrow && <ArrowUpRight className={cx('h-4 w-4', flipRtl)} aria-hidden />}
     </Link>
   );
 }
 
 export function Logo({ tone = 'dark', size = 'md', wordmarkClass }: { tone?: 'dark' | 'light'; size?: 'sm' | 'md'; wordmarkClass?: string }) {
   const s = size === 'sm' ? 26 : 30;
+  const fg = tone === 'dark' ? '#0a0a14' : '#ffffff';
   return (
-    <span className="inline-flex items-center gap-2.5">
+    <span className="inline-flex items-center gap-2.5" dir="ltr">
       <svg width={s} height={s} viewBox="0 0 32 32" aria-hidden>
         <defs>
           <linearGradient id={`lg-${tone}`} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor={tone === 'dark' ? '#1e3a5f' : '#ffffff'} />
-            <stop offset="1" stopColor={tone === 'dark' ? '#0a1220' : '#dbeefe'} />
+            <stop offset="0" stopColor="#2b7ee8" />
+            <stop offset=".5" stopColor="#6d5aff" />
+            <stop offset="1" stopColor="#06d98a" />
           </linearGradient>
         </defs>
-        <rect width="32" height="32" rx="8.5" fill={`url(#lg-${tone})`} />
         {/* A document edge with a single point of evidence */}
-        <path d="M10 8.5h8.5l4 4V23a.5.5 0 0 1-.5.5H10a.5.5 0 0 1-.5-.5V9a.5.5 0 0 1 .5-.5Z" fill="none" stroke={tone === 'dark' ? '#ffffff' : '#0f1b2d'} strokeWidth="1.8" strokeLinejoin="round" />
-        <path d="M12.6 15.2h6.8M12.6 18.6h4.2" stroke={tone === 'dark' ? '#ffffff' : '#0f1b2d'} strokeWidth="1.8" strokeLinecap="round" opacity=".55" />
-        <circle cx="22.5" cy="22.5" r="3.4" fill="#2b9aff" stroke={tone === 'dark' ? '#0a1220' : '#ffffff'} strokeWidth="1.6" />
+        <path d="M7 4h12.5L26 10.5V28H7Z" fill="none" stroke={tone === 'dark' ? `url(#lg-${tone})` : fg} strokeWidth="2.4" strokeLinejoin="miter" />
+        <path d="M11 14h10M11 18.5h6" stroke={tone === 'dark' ? `url(#lg-${tone})` : fg} strokeWidth="2.4" />
+        <rect x="18.5" y="20.5" width="7.5" height="7.5" fill={tone === 'dark' ? '#06d98a' : '#ffffff'} />
       </svg>
-      <span className={cx('font-bold tracking-[-0.03em]', wordmarkClass, size === 'sm' ? 'text-[17px]' : 'text-[19px]', tone === 'dark' ? 'text-ink' : 'text-white')}>
-        Bayyinah <span className={cx('font-semibold', tone === 'dark' ? 'text-ink-faint' : 'text-white/50')} lang="ar">بيّنة</span>
+      <span className={cx('font-semibold tracking-[-0.02em]', wordmarkClass, size === 'sm' ? 'text-[18px]' : 'text-[21px]', tone === 'dark' ? 'text-ink' : 'text-white')}>
+        Bayyinah <span className={cx('font-arabic font-bold', tone === 'dark' ? 'text-ink-faint' : 'text-white/60')} lang="ar">بيّنة</span>
       </span>
     </span>
   );
@@ -69,66 +75,41 @@ export function Logo({ tone = 'dark', size = 'md', wordmarkClass }: { tone?: 'da
 export function Pill({ children, dot, className }: { children: ReactNode; dot?: 'green' | 'blue' | 'amber'; className?: string }) {
   return (
     <span className={cx('pill', className)}>
-      {dot && <span className={cx('h-1.5 w-1.5 rounded-full', dot === 'green' ? 'bg-emerald-500' : dot === 'amber' ? 'bg-amber-500' : 'bg-brand-500')} aria-hidden />}
+      {dot && <span className={cx('h-1.5 w-1.5', dot === 'green' ? 'bg-signal-green' : dot === 'amber' ? 'bg-signal-amber' : 'bg-brand-600')} aria-hidden />}
       {children}
     </span>
   );
 }
 
-export function SectionTitle({ first, second, intro, className, as: As = 'h2' }: { first: string; second?: string; intro?: ReactNode; className?: string; as?: 'h1' | 'h2' }) {
+export function Eyebrow({ label, index, className, tone = 'dark' }: { label: string; index?: string; className?: string; tone?: 'dark' | 'light' }) {
   return (
-    <div className={className}>
-      <As className="t-headline max-w-3xl">
-        {first}
-        {second && (
-          <>
-            <br />
-            <span className="text-brand-600">{second}</span>
-          </>
-        )}
-      </As>
-      {intro && <p className="t-lead mt-4 max-w-2xl">{intro}</p>}
+    <div className={cx('t-eyebrow flex items-center justify-between gap-4', tone === 'light' && '!text-white/55', className)}>
+      <span>/ {label}</span>
+      {index && <span className="ltr" dir="ltr">[ {index} ]</span>}
     </div>
   );
 }
 
-const STATUS_TONE: Record<CaseStatus, string> = {
-  DRAFT: 'bg-zinc-100 text-zinc-700 border-zinc-200',
-  ANALYZED: 'bg-brand-50 text-brand-800 border-brand-100',
-  NEEDS_INFORMATION: 'bg-amber-50 text-amber-800 border-amber-200',
-  INDEPENDENT_CHECK_REQUIRED: 'bg-amber-50 text-amber-800 border-amber-200',
-  READY_FOR_REVIEW: 'bg-navy text-white border-navy',
-  CLOSED_APPROVED: 'bg-white text-ink border-line-strong',
-  CLOSED_REJECTED: 'bg-red-50 text-red-800 border-red-200',
-  CLOSED_INCONCLUSIVE: 'bg-zinc-100 text-zinc-700 border-zinc-200',
-};
-
-export function StatusBadge({ status, className }: { status: string; className?: string }) {
-  const s = status as CaseStatus;
-  return <span className={cx('inline-flex items-center rounded-full border px-2.5 py-0.5 text-[12px] font-semibold leading-5', STATUS_TONE[s] ?? STATUS_TONE.DRAFT, className)}>{STATUS_LABELS[s] ?? status}</span>;
-}
-
-const SEV_TONE: Record<Severity, string> = {
-  critical: 'bg-red-50 text-red-800 border-red-200',
-  warning: 'bg-red-50/60 text-red-700 border-red-100',
-  review: 'bg-amber-50 text-amber-800 border-amber-200',
-  info: 'bg-zinc-50 text-zinc-600 border-zinc-200',
-};
-
-export function SeverityBadge({ severity }: { severity: string }) {
-  const s = severity as Severity;
-  return <span className={cx('inline-flex items-center rounded-md border px-1.5 py-px text-[11px] font-bold leading-4', SEV_TONE[s] ?? SEV_TONE.info)}>{SEVERITY_LABELS[s] ?? severity}</span>;
+export function SectionTitle({ first, second, intro, className, as: As = 'h2', id }: { first: string; second?: string; intro?: ReactNode; className?: string; as?: 'h1' | 'h2'; id?: string }) {
+  return (
+    <div className={className}>
+      <As id={id} className="t-headline max-w-4xl">
+        {first} {second && <span className="text-brand-600">{second}</span>}
+      </As>
+      {intro && <p className="t-lead mt-5 max-w-3xl">{intro}</p>}
+    </div>
+  );
 }
 
 export function Notice({ tone = 'info', title, children, className }: { tone?: 'info' | 'review' | 'danger' | 'done'; title?: ReactNode; children?: ReactNode; className?: string }) {
   const map = {
-    info: { c: 'border-brand-100 bg-brand-50/70 text-brand-900', I: Info },
-    review: { c: 'border-amber-200 bg-amber-50 text-amber-900', I: AlertTriangle },
-    danger: { c: 'border-red-200 bg-red-50 text-red-900', I: OctagonAlert },
-    done: { c: 'border-emerald-200 bg-emerald-50 text-emerald-900', I: CheckCircle2 },
+    info: { c: 'border-brand-600 bg-brand-50/60 text-ink', I: Info },
+    review: { c: 'border-signal-amber bg-amber-50/70 text-amber-950', I: AlertTriangle },
+    danger: { c: 'border-signal-red bg-red-50/70 text-red-950', I: OctagonAlert },
+    done: { c: 'border-signal-green bg-emerald-50/60 text-emerald-950', I: CheckCircle2 },
   }[tone];
   return (
-    <div role={tone === 'danger' ? 'alert' : 'note'} className={cx('flex gap-3 rounded-xl border px-4 py-3 text-[14px] leading-6', map.c, className)}>
+    <div role={tone === 'danger' ? 'alert' : 'note'} className={cx('flex gap-3 border-s-[3px] px-4 py-3 text-[14px] leading-6', map.c, className)}>
       <map.I className="mt-[3px] h-4 w-4 shrink-0" aria-hidden />
       <div className="min-w-0">
         {title && <p className="font-semibold">{title}</p>}
@@ -171,14 +152,5 @@ export function Ltr({ children, mono, className }: { children: ReactNode; mono?:
     <bdi dir="ltr" className={cx('ltr', mono && 'font-mono text-[0.92em] tracking-tight', className)}>
       {children}
     </bdi>
-  );
-}
-
-export function KeyValue({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="min-w-0">
-      <dt className="t-caption text-ink-muted">{label}</dt>
-      <dd className="mt-0.5 break-words text-[15px] font-medium">{children ?? <span className="text-ink-faint">Not recorded</span>}</dd>
-    </div>
   );
 }

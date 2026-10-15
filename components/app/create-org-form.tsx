@@ -3,8 +3,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Field, Notice } from '@/components/ui';
 import { api, ApiError } from '@/lib/client';
+import { useT } from '@/components/i18n';
 
 export function CreateOrgForm() {
+  const t = useT();
   const router = useRouter();
   const [name, setName] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -21,17 +23,17 @@ export function CreateOrgForm() {
           router.push(`/app/${r.id}/admin`);
           router.refresh();
         } catch (err) {
-          setError(err instanceof ApiError ? err.message : 'Could not create the organization.');
+          setError(err instanceof ApiError ? err.message : t('Could not create the organization.'));
           setLoading(false);
         }
       }}
     >
       {error && <Notice tone="danger">{error}</Notice>}
-      <Field label="Organization name" htmlFor="org-name" hint="For example the trade name on your licence.">
+      <Field label={t('Organization name')} htmlFor="org-name" hint={t('For example the trade name on your licence.')}>
         <input id="org-name" required value={name} onChange={(e) => setName(e.target.value)} className="field-input" placeholder="Al Waha Trading LLC" />
       </Field>
       <Button type="submit" loading={loading} arrow>
-        Create organization
+        {t('Create organization')}
       </Button>
     </form>
   );

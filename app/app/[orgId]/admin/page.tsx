@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getT } from '@/lib/i18n/server';
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { requirePageUser } from '@/lib/auth/session';
@@ -6,8 +7,12 @@ import { requireRole } from '@/lib/services/access';
 import { getSettings } from '@/lib/settings';
 import { STATUS_LABELS, CASE_STATUSES } from '@/lib/constants';
 import { Notice, StatusBadge } from '@/components/ui';
+import { formatDate } from '@/lib/i18n/core';
 
-export const metadata: Metadata = { title: 'Manage organization' };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT();
+  return { title: t('Manage organization') };
+}
 export const dynamic = 'force-dynamic';
 
 export default async function AdminOverview({ params }: { params: Promise<{ orgId: string }> }) {
@@ -28,27 +33,28 @@ export default async function AdminOverview({ params }: { params: Promise<{ orgI
     getSettings(),
   ]);
   const totalCases = byStatus.reduce((n, s) => n + s._count, 0);
+  const { t, locale } = await getT();
   return (
     <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
       <div className="space-y-6">
         {pendingRef.length > 0 && (
-          <Notice tone="review" title={`${pendingRef.length} supplier reference${pendingRef.length > 1 ? 's' : ''} not yet reviewed`}>
+          <Notice tone="review" title={t('Supplier references not yet reviewed: {n}', { n: pendingRef.length })}>
             {pendingRef.map((s, i) => (
-              <span key={s.id}>{i > 0 && ', '}<Link href={`/app/${orgId}/admin/suppliers/${s.id}`} className="underline">{s.name} (v{s.currentVersion})</Link></span>
+              <span key={s.id}>{i > 0 && t(', ')}<Link href={`/app/${orgId}/admin/suppliers/${s.id}`} className="underline">{s.name} (<span dir="ltr">v{s.currentVersion}</span>)</Link></span>
             ))}
-            . Cases using them show this as a finding.
+            . {t('Cases using them show this as a finding.')}
           </Notice>
         )}
         <section className="card p-6">
-          <h2 className="t-sub text-[19px]">Cases by status</h2>
-          <p className="text-[13px] text-ink-muted">{totalCases} case{totalCases === 1 ? '' : 's'} in total.</p>
+          <h2 className="t-sub text-[19px]">{t('Cases by status')}</h2>
+          <p className="text-[13px] text-ink-muted">{t('Total cases: {n}.', { n: totalCases })}</p>
           <ul className="mt-4 divide-y divide-line">
             {CASE_STATUSES.map((s) => {
               const n = byStatus.find((b) => b.status === s)?._count ?? 0;
               return (
                 <li key={s} className="flex items-center justify-between py-2.5">
                   <StatusBadge status={s} />
-                  <span className="text-[15px] font-bold tabular-nums">{n}</span>
+                  <span className="font-mono text-[15px] font-semibold tabular-nums">{n}</span>
                 </li>
               );
             })}
@@ -56,14 +62,14 @@ export default async function AdminOverview({ params }: { params: Promise<{ orgI
         </section>
         <section className="card p-6">
           <div className="flex items-center justify-between">
-            <h2 className="t-sub text-[19px]">Recent activity</h2>
-            <Link href={`/app/${orgId}/admin/audit`} className="link text-[14px]">Full audit trail</Link>
+            <h2 className="t-sub text-[19px]">{t('Recent activity')}</h2>
+            <Link href={`/app/${orgId}/admin/audit`} className="link text-[14px]">{t('Full audit trail')}</Link>
           </div>
           <ul className="mt-3 divide-y divide-line text-[14px]">
             {recent.map((e) => (
               <li key={e.id} className="flex justify-between gap-4 py-2.5">
-                <span><code className="font-mono text-[12.5px]">{e.action}</code> <span className="text-ink-muted">· {e.actorEmail ?? 'system'}</span></span>
-                <span className="shrink-0 text-ink-muted">{e.createdAt.toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Asia/Dubai' })}</span>
+                <span><code className="font-mono text-[12.5px]" dir="ltr">{e.action}</code> <span className="text-ink-muted">· {e.actorEmail ? <span dir="ltr">{e.actorEmail}</span> : t('system')}</span></span>
+                <span className="shrink-0 text-ink-muted">{formatDate(locale, e.createdAt, { dateStyle: 'short', timeStyle: 'short' })}</span>
               </li>
             ))}
           </ul>
@@ -71,24 +77,24 @@ export default async function AdminOverview({ params }: { params: Promise<{ orgI
       </div>
       <div className="space-y-6">
         <section className="card p-6">
-          <h2 className="t-sub text-[19px]">Organization</h2>
+          <h2 className="t-sub text-[19px]">{t('Organization')}</h2>
           <dl className="mt-4 space-y-2.5 text-[14px]">
-            <div className="flex justify-between"><dt className="text-ink-muted">Name</dt><dd className="font-semibold">{org.name}</dd></div>
-            <div className="flex justify-between"><dt className="text-ink-muted">Members</dt><dd className="font-semibold"><Link className="link" href={`/app/${orgId}/admin/members`}>{members}</Link></dd></div>
-            <div className="flex justify-between"><dt className="text-ink-muted">Pending invitations</dt><dd className="font-semibold">{invites}</dd></div>
-            <div className="flex justify-between"><dt className="text-ink-muted">Active suppliers</dt><dd className="font-semibold"><Link className="link" href={`/app/${orgId}/admin/suppliers`}>{suppliers}</Link></dd></div>
-            <div className="flex justify-between"><dt className="text-ink-muted">Evidence retention</dt><dd className="font-semibold">{org.retentionDays} days after closure</dd></div>
+            <div className="flex justify-between"><dt className="text-ink-muted">{t('Name')}</dt><dd className="font-semibold">{org.name}</dd></div>
+            <div className="flex justify-between"><dt className="text-ink-muted">{t('Members')}</dt><dd className="font-semibold"><Link className="link" href={`/app/${orgId}/admin/members`}>{members}</Link></dd></div>
+            <div className="flex justify-between"><dt className="text-ink-muted">{t('Pending invitations')}</dt><dd className="font-semibold">{invites}</dd></div>
+            <div className="flex justify-between"><dt className="text-ink-muted">{t('Active suppliers')}</dt><dd className="font-semibold"><Link className="link" href={`/app/${orgId}/admin/suppliers`}>{suppliers}</Link></dd></div>
+            <div className="flex justify-between"><dt className="text-ink-muted">{t('Evidence retention')}</dt><dd className="font-semibold">{t('{n} days after closure', { n: org.retentionDays })}</dd></div>
           </dl>
-          <Link href={`/app/${orgId}/admin/settings`} className="link mt-4 inline-block text-[14px]">Edit settings</Link>
+          <Link href={`/app/${orgId}/admin/settings`} className="link mt-4 inline-block text-[14px]">{t('Edit settings')}</Link>
         </section>
         <section className="card p-6">
-          <h2 className="t-sub text-[19px]">Usage limits</h2>
+          <h2 className="t-sub text-[19px]">{t('Usage limits')}</h2>
           <dl className="mt-4 space-y-2.5 text-[14px]">
-            <div className="flex justify-between"><dt className="text-ink-muted">Analyses today</dt><dd className="font-semibold tabular-nums">{analysesToday} / {settings.max_analyses_per_org_per_day}</dd></div>
-            <div className="flex justify-between"><dt className="text-ink-muted">Cases</dt><dd className="font-semibold tabular-nums">{totalCases} / {settings.max_cases_per_org}</dd></div>
-            <div className="flex justify-between"><dt className="text-ink-muted">Upload size</dt><dd className="font-semibold">{settings.max_file_size_mb} MB</dd></div>
+            <div className="flex justify-between"><dt className="text-ink-muted">{t('Analyses today')}</dt><dd className="font-semibold tabular-nums" dir="ltr">{analysesToday} / {settings.max_analyses_per_org_per_day}</dd></div>
+            <div className="flex justify-between"><dt className="text-ink-muted">{t('Cases')}</dt><dd className="font-semibold tabular-nums" dir="ltr">{totalCases} / {settings.max_cases_per_org}</dd></div>
+            <div className="flex justify-between"><dt className="text-ink-muted">{t('Upload size')}</dt><dd className="font-semibold">{t('{n} MB', { n: settings.max_file_size_mb })}</dd></div>
           </dl>
-          <p className="mt-3 text-[12.5px] text-ink-muted">Limits are set by platform operations.</p>
+          <p className="mt-3 text-[12.5px] text-ink-muted">{t('Limits are set by platform operations.')}</p>
         </section>
       </div>
     </div>

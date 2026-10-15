@@ -1,10 +1,14 @@
 import type { Metadata } from 'next';
+import { getT } from '@/lib/i18n/server';
 import { prisma } from '@/lib/db';
 import { requirePageUser } from '@/lib/auth/session';
 import { MembersAdmin } from '@/components/admin/members';
 import { parseRoles } from '@/lib/roles';
 
-export const metadata: Metadata = { title: 'Members & invitations' };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT();
+  return { title: t('Members & invitations') };
+}
 export const dynamic = 'force-dynamic';
 
 export default async function MembersPage({ params }: { params: Promise<{ orgId: string }> }) {

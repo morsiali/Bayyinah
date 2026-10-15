@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getT } from '@/lib/i18n/server';
 import { notFound } from 'next/navigation';
 import { guardPage } from '@/lib/page-guard';
 import { getCaseDetail } from '@/lib/services/cases';
@@ -6,8 +7,12 @@ import { decisionBlockers } from '@/lib/services/review';
 import { getProviderConfig } from '@/lib/ai/provider';
 import { CaseWorkspace } from '@/components/case/case-workspace';
 import { AppError } from '@/lib/errors';
+import { msg } from '@/lib/i18n/core';
 
-export const metadata: Metadata = { title: 'Case' };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT();
+  return { title: t('Case') };
+}
 export const dynamic = 'force-dynamic';
 
 export default async function CasePage({ params, searchParams }: { params: Promise<{ orgId: string; caseId: string }>; searchParams: Promise<{ from?: string }> }) {
@@ -21,7 +26,7 @@ export default async function CasePage({ params, searchParams }: { params: Promi
     if (e instanceof AppError && e.code === 'NOT_FOUND') notFound();
     throw e;
   }
-  const reviewBlockers = ctx.roles.includes('REVIEWER') ? await decisionBlockers(user, orgId, caseId) : ['You do not hold the Reviewer role in this organization.'];
+  const reviewBlockers = ctx.roles.includes('REVIEWER') ? await decisionBlockers(user, orgId, caseId) : [msg('You do not hold the Reviewer role in this organization.')];
   const provider = getProviderConfig();
   const data = JSON.parse(JSON.stringify(detail));
   return (
@@ -32,7 +37,7 @@ export default async function CasePage({ params, searchParams }: { params: Promi
       reviewBlockers={reviewBlockers}
       provider={{ label: provider.label, model: provider.model, external: provider.external, kind: provider.kind }}
       backHref={from === 'review' ? `/app/${orgId}/review` : ctx.roles.includes('PREPARER') ? `/app/${orgId}/prepare` : ctx.roles.includes('REVIEWER') ? `/app/${orgId}/review` : `/app/${orgId}/admin`}
-      backLabel={from === 'review' || !ctx.roles.includes('PREPARER') ? 'Review cases' : 'Prepare cases'}
+      backLabel={from === 'review' || !ctx.roles.includes('PREPARER') ? msg('Review cases') : msg('Prepare cases')}
     />
   );
 }
