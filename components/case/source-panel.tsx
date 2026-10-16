@@ -34,7 +34,7 @@ export function SourcePanel({ data, orgId, me, activeQuote }: { data: CaseData; 
               <div className="mt-3 flex flex-wrap gap-1.5" role="tablist" aria-label={t('Source documents')}>
                 {docs.map((d, i) => (
                   <button key={d.id} role="tab" aria-selected={d.id === doc?.id} onClick={() => setSelected(d.id)} className={cx('border px-2.5 py-1 text-[12.5px] font-semibold', d.id === doc?.id ? 'border-navy bg-navy text-white' : 'border-line bg-white text-ink-soft')}>
-                    S{i + 1} · {d.kind === 'PDF' ? 'PDF' : t('Text')}
+                    S{i + 1} · {d.kind === 'PDF' ? 'PDF' : d.kind === 'SMS' ? 'SMS' : t('Text')}
                   </button>
                 ))}
               </div>

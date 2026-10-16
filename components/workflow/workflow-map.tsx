@@ -54,6 +54,18 @@ export function WorkflowMap() {
     window.history.replaceState(null, '', `${window.location.pathname}?${q}`);
   }, [scenarioId, pos]);
 
+  // Keep the chosen scenario visible in its horizontally scrolling row (without moving the page).
+  const chipsRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const c = chipsRef.current;
+    const btn = c?.querySelector<HTMLElement>('[aria-pressed="true"]');
+    if (!c || !btn) return;
+    const cr = c.getBoundingClientRect();
+    const br = btn.getBoundingClientRect();
+    if (br.left < cr.left) c.scrollLeft -= cr.left - br.left + 16;
+    else if (br.right > cr.right) c.scrollLeft += br.right - cr.right + 16;
+  }, [scenarioId]);
+
   // Play walks the current scenario one stop at a time.
   useEffect(() => {
     if (!playing) return;
@@ -141,7 +153,7 @@ export function WorkflowMap() {
         </div>
 
         {/* Scenarios */}
-        <div className="mt-3 flex items-center gap-3 overflow-x-auto pb-3" role="group" aria-label={t('Walk a scenario')}>
+        <div ref={chipsRef} className="mt-3 flex items-center gap-3 overflow-x-auto pb-3" role="group" aria-label={t('Walk a scenario')}>
           <span className="t-eyebrow shrink-0">{t('Scenario')}</span>
           {SCENARIOS.map((s) => (
             <button key={s.id} type="button" aria-pressed={s.id === scenarioId} onClick={() => pickScenario(s.id)} className={cx('shrink-0 whitespace-nowrap border-b-2 px-1 py-1 text-[13px] font-semibold', s.id === scenarioId ? 'border-brand-600 text-ink' : 'border-transparent text-ink-muted hover:text-ink')}>

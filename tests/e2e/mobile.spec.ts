@@ -22,7 +22,9 @@ for (const email of ['omar@alwaha.example', 'layla@alwaha.example', 'ops@bayyina
     await page.waitForLoadState('networkidle');
     const start = new URL(page.url()).pathname;
     const links = new Set<string>([start]);
+    const org = /^\/app\/[^/]+/.exec(start)?.[0];
+    if (org) links.add(`${org}/inbox`).add(`${org}/admin/sms`);
     for (const h of await page.$$eval('main a[href^="/app"], main a[href^="/platform"]', (as) => as.map((a) => a.getAttribute('href')!))) links.add(h.split('#')[0]);
-    for (const l of [...links].slice(0, 12)) await noOverflow(page, l);
+    for (const l of [...links].slice(0, 14)) await noOverflow(page, l);
   });
 }

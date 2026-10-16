@@ -143,7 +143,7 @@ export async function runAnalysis(actor: Actor, orgId: string, caseId: string) {
   const sources: SourceForAnalysis[] = docs.map((d, i) => {
     const text = d.rawText ?? '';
     if (text.length > per) truncated = true;
-    return { id: d.id, alias: `S${i + 1}`, kind: d.kind === 'PDF' ? 'pdf' : 'pasted_text', text: text.slice(0, per) };
+    return { id: d.id, alias: `S${i + 1}`, kind: d.kind === 'PDF' ? 'pdf' : d.kind === 'SMS' ? 'sms' : 'pasted_text', text: text.slice(0, per) };
   });
 
   const cfg = getProviderConfig();

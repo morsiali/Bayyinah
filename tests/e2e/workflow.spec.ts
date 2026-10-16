@@ -4,14 +4,14 @@ test('the workflow map walks every step and every scenario', async ({ page }) =>
   await page.goto('/workflow');
   const detail = page.getByTestId('workflow-detail');
   const counter = page.getByTestId('workflow-counter');
-  await expect(page.locator('[data-step]')).toHaveCount(19);
+  await expect(page.locator('[data-step]')).toHaveCount(20);
   await expect(detail.getByTestId('workflow-title')).toHaveText('Create the organization');
-  await expect(counter).toHaveText('Step 1 of 19');
+  await expect(counter).toHaveText('Step 1 of 20');
   // Connectors are drawn for every edge once the layout is measured.
-  await expect(page.locator('path[data-edge]')).toHaveCount(25);
+  await expect(page.locator('path[data-edge]')).toHaveCount(27);
 
   await detail.getByRole('button', { name: 'Next step' }).click();
-  await expect(counter).toHaveText('Step 2 of 19');
+  await expect(counter).toHaveText('Step 2 of 20');
   await expect(detail.getByTestId('workflow-title')).toHaveText('Invite the team');
 
   // Picking a scenario starts playing it.

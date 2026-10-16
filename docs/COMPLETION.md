@@ -19,6 +19,7 @@ Test environment: Linux container, Node 22, SQLite, Chromium (Playwright 1.56). 
 | Supplier references, version history, review status, case snapshots | IMPLEMENTED AND VERIFIED | Integration + E2E | — |
 | Updated reference → new case version, invalidating analysis/verification/review | IMPLEMENTED AND VERIFIED | Integration | — |
 | Sources: pasted text, text-based PDF (10 MB, content-sniffed) | IMPLEMENTED AND VERIFIED | Integration (generated PDFs, fake PDF rejected) | — |
+| SMS intake: per-organization secret address, Twilio webhook (signature checked when `TWILIO_AUTH_TOKEN` is set) and JSON forwarders, dedupe by message id, rate limit, inbox with indicators and supplier suggestion, one-click case with the SMS as source, dismiss with reason, retention | IMPLEMENTED AND VERIFIED | Unit (parsing, Twilio's documented signature example, phone matching); integration (webhook → inbox → case → analysis → agent, isolation, retention); E2E (address → forwarded text → inbox → case → dismiss, Arabic, phone layout) | Needs a Twilio number or an Android phone with a forwarding app; not tested against Twilio's live servers. Rate limit is in-memory per process |
 | Unreadable/scanned PDFs → no fake analysis | IMPLEMENTED AND VERIFIED | Integration | OCR out of scope |
 | AI analysis with strict schema, one repair attempt, citation verification | IMPLEMENTED AND VERIFIED with Abacus RouteLLM `gpt-5.4-mini` | E2E live flow run with the real model; `npm run eval` 8/8 labelled cases | Anthropic and OpenAI adapters: IMPLEMENTED BUT NOT VERIFIED (no keys available) |
 | Local rules analyzer (no provider configured) | IMPLEMENTED AND VERIFIED | Unit tests; eval 8/8 | Pattern-based; less capable than a model |
@@ -42,7 +43,8 @@ Test environment: Linux container, Node 22, SQLite, Chromium (Playwright 1.56). 
 
 - AI model explanations are shown in the language the model wrote them (English by default); all interface text, rule findings and server messages are translated.
 - No email sending (invitation and reset links are shared manually; self-service reset links go to the server log).
-- Login throttling is in-memory per process.
+- Login throttling and the SMS rate limit are in-memory per process.
+- SMS intake receives texts only; Bayyinah never sends or replies by SMS. iPhones cannot forward texts automatically — use a Twilio number or an Android phone.
 - SQLite is suitable for a single-server pilot; use PostgreSQL for multiple instances.
 - The local analyzer is pattern-based. Configure a model provider for real use.
 - The AI evaluation set is small and hand-written; it checks explicit expectations and is not an accuracy measurement.

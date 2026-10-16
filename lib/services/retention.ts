@@ -7,6 +7,7 @@ import { deleteFile } from '@/lib/storage';
 export async function purgeExpiredEvidence(now = new Date()) {
   const orgs = await prisma.organization.findMany({ select: { id: true, retentionDays: true } });
   let purged = 0;
+  let smsPurged = 0;
   for (const org of orgs) {
     const cutoff = new Date(now.getTime() - org.retentionDays * 86400_000);
     const cases = await prisma.case.findMany({ where: { orgId: org.id, status: { startsWith: 'CLOSED_' }, closedAt: { lt: cutoff } }, select: { id: true } });
@@ -18,6 +19,12 @@ export async function purgeExpiredEvidence(now = new Date()) {
       await audit({ orgId: org.id, actor: null, action: 'retention.evidence_purged', entityType: 'case', entityId: c.id, changedFields: { documents: docs.length, retentionDays: org.retentionDays } });
       purged += docs.length;
     }
+    // Inbox messages that were handled before the cutoff lose their text; sender and outcome stay.
+    const sms = await prisma.inboundMessage.updateMany({ where: { orgId: org.id, status: { not: 'NEW' }, receivedAt: { lt: cutoff }, body: { not: null } }, data: { body: null } });
+    if (sms.count) {
+      await audit({ orgId: org.id, actor: null, action: 'retention.sms_purged', entityType: 'organization', entityId: org.id, changedFields: { messages: sms.count, retentionDays: org.retentionDays } });
+      smsPurged += sms.count;
+    }
   }
-  return { purged };
+  return { purged, smsPurged };
 }

@@ -11,6 +11,7 @@ export function AdminNav({ orgId }: { orgId: string }) {
     { href: `/app/${orgId}/admin`, label: t('Overview'), exact: true },
     { href: `/app/${orgId}/admin/suppliers`, label: t('Suppliers') },
     { href: `/app/${orgId}/admin/members`, label: t('Members & invitations') },
+    { href: `/app/${orgId}/admin/sms`, label: t('SMS intake') },
     { href: `/app/${orgId}/admin/audit`, label: t('Audit trail') },
     { href: `/app/${orgId}/admin/settings`, label: t('Settings & limits') },
   ];

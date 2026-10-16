@@ -92,7 +92,7 @@ export default async function ReportPage({ params }: { params: Promise<{ orgId: 
           <ul className="mt-2 space-y-1 text-[14px]">
             {c.sourceDocuments.map((s, i) => (
               <li key={s.id}>
-                S{i + 1} — {s.kind === 'PDF' ? <>PDF “<Ltr>{s.fileName}</Ltr>”</> : t('Pasted text')}, {t('added {date} by {name}', { date: fmt(s.createdAt), name: d.names[s.uploadedBy]?.name ?? t('member') })}
+                S{i + 1} — {s.kind === 'PDF' ? <>PDF “<Ltr>{s.fileName}</Ltr>”</> : s.kind === 'SMS' && s.label ? tx(s.label) : t('Pasted text')}, {t('added {date} by {name}', { date: fmt(s.createdAt), name: d.names[s.uploadedBy]?.name ?? t('member') })}
                 {s.sha256 ? <>, SHA-256 <Ltr mono>{s.sha256.slice(0, 16)}…</Ltr></> : null}
                 {s.extractionStatus === 'FAILED' ? ` — ${t('unreadable, not analyzed')}` : ''}
               </li>

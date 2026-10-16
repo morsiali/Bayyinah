@@ -50,10 +50,13 @@ model Organization {
   slug          String   @unique
   status        String   @default("ACTIVE") // ACTIVE | SUSPENDED
   retentionDays Int      @default(365)
+  smsTokenHash  String?  @unique // SHA-256 of the secret in the SMS intake address; null = no address
+  smsEnabled    Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   memberships   Membership[]
+  inboundMessages InboundMessage[]
   invitations   OrganizationInvitation[]
   suppliers     Supplier[]
   cases         Case[]
@@ -192,7 +195,7 @@ model SourceDocument {
   caseId             String
   orgId              String
   caseInputVersionId String
-  kind               String   // PASTED_TEXT | PDF
+  kind               String   // PASTED_TEXT | PDF | SMS
   label              String?
   fileName           String?
   mimeType           String?
@@ -442,4 +445,30 @@ model ModelCallLog {
   createdAt    DateTime @default(now())
 
   @@index([createdAt])
+}
+
+// ───────────────────────── Inbound messages (SMS intake) ─────────────────────────
+
+/// A text message received on the organization's SMS intake address. It lands here first and only
+/// becomes evidence when a preparer turns it into a case. Contents are never acted on automatically.
+model InboundMessage {
+  id                String    @id @default(cuid())
+  orgId             String
+  channel           String    @default("SMS")
+  provider          String    // TWILIO | FORWARDER | TEST
+  providerMessageId String?
+  fromNumber        String
+  toNumber          String?
+  body              String?   // null after retention purge
+  receivedAt        DateTime  @default(now())
+  sentAt            DateTime?
+  status            String    @default("NEW") // NEW | CASE_CREATED | DISMISSED
+  caseId            String?
+  dismissedReason   String?
+  handledBy         String?
+  handledAt         DateTime?
+  org               Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, providerMessageId])
+  @@index([orgId, status, receivedAt])
 }

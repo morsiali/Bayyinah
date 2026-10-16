@@ -61,6 +61,12 @@ export const STEPS: Step[] = [
     screen: msg('Suppliers › Supplier reference'), result: msg('A reviewed reference, ready for cases.'), demoPersona: 'admin', liveRoute: '/app',
   },
   {
+    id: 'I1', lane: 'system', zone: 'case',
+    title: msg('SMS arrives in the inbox'), sub: msg('Twilio number or forwarding phone'),
+    description: msg('A text sent to the organization’s SMS address lands in the Bayyinah inbox first, with its sender, time and language indicators. Nothing in it is acted on automatically and Bayyinah never replies to the sender. A preparer turns it into a case or dismisses it with a reason.'),
+    screen: msg('SMS inbox'), result: msg('A message waiting in the inbox.'), demoPersona: 'preparer', liveRoute: '/app',
+  },
+  {
     id: 'C1', lane: 'preparer', zone: 'case',
     title: msg('Create the case'), sub: msg('supplier, type, expected amount'),
     description: msg('When a payment request arrives, pick the supplier it claims to come from and what it asks for: invoice payment, bank account change or new beneficiary. The case keeps a snapshot of the supplier reference.'),
@@ -68,7 +74,7 @@ export const STEPS: Step[] = [
   },
   {
     id: 'C2', lane: 'preparer', zone: 'case',
-    title: msg('Add the source'), sub: msg('pasted text or text PDF'),
+    title: msg('Add the source'), sub: msg('pasted text, text PDF or SMS'),
     description: msg('Paste the email exactly as received or upload a text-based PDF. A scanned PDF is kept as evidence but marked unreadable and never analyzed — paste its text instead.'),
     screen: msg('Case › Source evidence'), result: msg('Readable source evidence.'), status: 'DRAFT', demoPersona: 'preparer', liveRoute: '/app',
   },
@@ -160,6 +166,8 @@ export const EDGES: Edge[] = [
   { from: 'A2', to: 'A3', kind: 'next' },
   { from: 'A3', to: 'A4', kind: 'next' },
   { from: 'A4', to: 'C1', kind: 'next', label: msg('then, for every request') },
+  { from: 'A4', to: 'I1', kind: 'branch', label: msg('SMS intake turned on') },
+  { from: 'I1', to: 'C1', kind: 'next', label: msg('create case from the SMS') },
   { from: 'C1', to: 'C2', kind: 'next' },
   { from: 'C2', to: 'C3', kind: 'next' },
   { from: 'C3', to: 'C4', kind: 'next' },
@@ -272,6 +280,20 @@ export const SCENARIOS: Scenario[] = [
       { id: 'C8' }, { id: 'C9' }, { id: 'C10' },
       { id: 'C11', note: msg('Decision: approved.'), status: 'CLOSED_APPROVED' },
       { id: 'F1', status: 'CLOSED_APPROVED' },
+    ],
+  },
+  {
+    id: 'sms', name: msg('Request by SMS'), summary: msg('A text asks to pay into a new account. It lands in the inbox first, becomes a case with the SMS as its source, and is rejected after the supplier denies it.'),
+    stops: [
+      { id: 'I1', note: msg('The sender number matches the supplier’s recorded phone — which proves nothing, because sender numbers can be forged.') },
+      { id: 'C1', note: msg('Supplier and request type are suggested from the message; the preparer confirms them.') },
+      { id: 'C2', note: msg('The SMS is already the first source, exactly as received.') },
+      { id: 'C3' }, { id: 'C4' },
+      { id: 'C6', note: msg('Bank account change: a verification task is always created.') },
+      { id: 'C7', note: msg('Outcome recorded: not confirmed — the supplier never asked for the change.') },
+      { id: 'C8' }, { id: 'C9' }, { id: 'C10' },
+      { id: 'C11', note: msg('Decision: rejected.'), status: 'CLOSED_REJECTED' },
+      { id: 'F1', status: 'CLOSED_REJECTED' },
     ],
   },
   {

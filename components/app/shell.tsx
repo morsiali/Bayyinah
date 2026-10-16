@@ -7,14 +7,18 @@ import { getT } from '@/lib/i18n/server';
 import { LogoutButton } from './logout-button';
 import { WorkspaceTabs } from './workspace-tabs';
 import type { Role } from '@/lib/constants';
+import { newSmsCount } from '@/lib/services/sms';
 
 export type ShellOrg = { orgId: string; name: string; roles: Role[] };
 
 export async function AppShell({ user, orgs, current, isPlatformAdmin, children }: { user: { name: string; email: string }; orgs: ShellOrg[]; current?: ShellOrg; isPlatformAdmin?: boolean; children: ReactNode }) {
   const { t } = await getT();
+  const showInbox = !!current && (current.roles.includes('PREPARER') || current.roles.includes('ORG_ADMIN'));
+  const waiting = showInbox ? await newSmsCount(current.orgId) : 0;
   const tabs = current
     ? [
         ...(current.roles.includes('PREPARER') ? [{ href: `/app/${current.orgId}/prepare`, label: t('Prepare cases') }] : []),
+        ...(showInbox ? [{ href: `/app/${current.orgId}/inbox`, label: t('SMS inbox'), badge: waiting, testId: 'tab-inbox' }] : []),
         ...(current.roles.includes('REVIEWER') ? [{ href: `/app/${current.orgId}/review`, label: t('Review cases') }] : []),
         ...(current.roles.includes('ORG_ADMIN') ? [{ href: `/app/${current.orgId}/admin`, label: t('Manage organization') }] : []),
       ]

@@ -4,7 +4,7 @@ import { prisma } from '../lib/db';
 import { purgeExpiredEvidence } from '../lib/services/retention';
 
 purgeExpiredEvidence()
-  .then((r) => console.log(`Retention run complete: ${r.purged} document(s) purged.`))
+  .then((r) => console.log(`Retention run complete: ${r.purged} document(s) and ${r.smsPurged} SMS message(s) purged.`))
   .catch((e) => {
     console.error(e);
     process.exit(1);

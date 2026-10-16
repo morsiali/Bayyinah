@@ -71,12 +71,15 @@ The seed leaves one case at each stage: approved (with report), waiting for inde
 | Demo Mode (fictional data, simulated AI, identity switcher, reset) | `/demo` | Anyone |
 | Registration, sign-in, password recovery, invitation acceptance | `/signup`, `/login`, `/forgot-password`, `/invite/…` | Anyone |
 | Case preparation workspace | `/app/{org}/prepare` | Preparer |
+| SMS inbox: texts land here first, then become cases or are dismissed with a reason | `/app/{org}/inbox` | Preparer, Organization admin |
 | Review workspace | `/app/{org}/review` | Reviewer |
-| Organization administration (suppliers + versions, members, invitations, audit, settings) | `/app/{org}/admin` | Organization admin |
+| Organization administration (suppliers + versions, members, invitations, SMS intake, audit, settings) | `/app/{org}/admin` | Organization admin |
 | Decision Passport (case workspace) and printable report | `/app/{org}/cases/{id}` | Members, actions by role |
 | Platform operations (metadata only, no case content) | `/platform` | Provisioned platform admins |
 
-**Workflow:** see `/workflow` for the interactive map (data in `lib/workflow.ts`, checked against the server's status transitions by `tests/unit/workflow.test.ts`). In short: create/select supplier → create case → add source (paste text or text-based PDF) → analysis (AI or local) → review/correct extraction → deterministic comparison → bounded preparation agent → human independent verification → submit for review → separate reviewer decides → report + audit history.
+**SMS intake:** an organization admin creates a secret SMS address under *Manage organization › SMS intake* and points a Twilio number (webhook, HTTP POST) or an Android SMS-forwarding app (JSON `{"from": …, "text": …}`) at it. Every text lands in the SMS inbox first; nothing is acted on automatically and Bayyinah never replies to the sender. A preparer turns a message into a case in one click (supplier suggested from the recorded phone, request type from the text), and the SMS becomes the case's first source exactly as received. Set `TWILIO_AUTH_TOKEN` to have every Twilio request's signature checked. Webhook: `POST /api/sms/inbound/{token}`.
+
+**Workflow:** see `/workflow` for the interactive map (data in `lib/workflow.ts`, checked against the server's status transitions by `tests/unit/workflow.test.ts`). In short: create/select supplier → create case (or create it from an SMS in the inbox) → add source (paste text, text-based PDF or SMS) → analysis (AI or local) → review/correct extraction → deterministic comparison → bounded preparation agent → human independent verification → submit for review → separate reviewer decides → report + audit history.
 
 ## Architecture
 

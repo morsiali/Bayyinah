@@ -14,6 +14,7 @@ import { runAgent } from '../lib/services/agent';
 import { recordVerification } from '../lib/services/verification';
 import { recordDecision } from '../lib/services/review';
 import { DEMO_SCENARIOS } from '../lib/demo-data';
+import { createSmsAddress, receiveSms } from '../lib/services/sms';
 
 export const SEED_PASSWORD = 'Bayyinah!2026';
 
@@ -96,6 +97,11 @@ async function main() {
   // 4) Missing evidence — a draft with only a vague message.
   const c4 = await createCase(omar, org.id, { supplierId: sup['missing-evidence'], requestType: 'INVOICE_PAYMENT' });
   await addPastedSource(omar, org.id, c4.id, { text: src('missing-evidence') });
+
+  // 5) SMS intake — two texts waiting in the inbox (as if forwarded by the business phone).
+  await createSmsAddress(layla, org.id);
+  await receiveSms(org.id, { provider: 'FORWARDER', from: '+97145550202', to: null, providerMessageId: 'seed-sms-1', sentAt: null, truncated: false, body: `Gulf Supplies: our bank account has changed. Please pay INV-2026-0431 (AED 22,400.00) to our new IBAN ${makeIban('AE', '0337777777777777777')} today. Do not call, our lines are down.` });
+  await receiveSms(org.id, { provider: 'FORWARDER', from: '+971551234567', to: null, providerMessageId: 'seed-sms-2', sentAt: null, truncated: false, body: 'مرحباً، نرجو تحويل قيمة الفاتورة 2219 بمبلغ 6,300 درهم إلى حساب بنكي جديد بسرية تامة. عاجل.' });
 
   // Second organization, to demonstrate isolation.
   const org2 = await createOrganization(hana, 'Desert Rose Interiors');

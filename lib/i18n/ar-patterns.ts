@@ -8,6 +8,7 @@ const NOUN: Record<string, string> = {
   Attachment: 'المرفق',
   'Document file': 'ملف المستند',
   Invitation: 'الدعوة',
+  Message: 'الرسالة',
   Member: 'العضو',
   Organization: 'المؤسسة',
   Supplier: 'المورّد',
@@ -104,6 +105,7 @@ export const AR_PATTERNS: Pattern[] = [
   // Case history
   { re: /^Material correction to (\w+)$/, to: (m, tr) => `تصحيح جوهري لحقل «${tr(FIELD_NAMES[m[1]] ?? m[1])}»` },
   { re: /^Reopened: (.+)$/s, to: (m) => `أُعيد فتحها: ${m[1]}` },
+  { re: /^SMS from (\S+)$/, to: (m) => `رسالة نصية من ‎${m[1]}‎` },
   { re: /^Supplier reference updated to version (\d+)$/, to: (m) => `حُدّث السجل المرجعي للمورّد إلى النسخة ${m[1]}` },
 ];
 

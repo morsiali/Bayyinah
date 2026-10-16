@@ -66,7 +66,7 @@ export const WORKFLOW: Record<string, string> = {
   'Prepare cases › New case': 'إعداد الحالات › حالة جديدة',
   'A case number and evidence version 1.': 'رقم حالة ونسخة الأدلة 1.',
   'Add the source': 'أضف المصدر',
-  'pasted text or text PDF': 'نص ملصق أو ملف PDF نصي',
+  'pasted text, text PDF or SMS': 'نص ملصق أو ملف PDF نصي أو رسالة نصية',
   'Paste the email exactly as received or upload a text-based PDF. A scanned PDF is kept as evidence but marked unreadable and never analyzed — paste its text instead.': 'الصق البريد كما وصل تماماً أو ارفع ملف PDF نصياً. يُحفظ ملف PDF الممسوح ضوئياً كدليل لكنه يُعلَّم كغير مقروء ولا يُحلَّل أبداً — الصق نصه بدلاً منه.',
   'Case › Source evidence': 'الحالة › أدلة المصدر',
   'Readable source evidence.': 'دليل مصدر مقروء.',
@@ -212,4 +212,19 @@ export const WORKFLOW: Record<string, string> = {
   'Approved — only when every requirement is met': 'معتمدة — فقط عند استيفاء جميع المتطلبات',
   'An updated supplier reference is applied (new evidence version)': 'طُبّق سجل مرجعي محدّث للمورّد (نسخة أدلة جديدة)',
   'Reopened into a new evidence version': 'أُعيد فتحها في نسخة أدلة جديدة',
+  // SMS intake
+  'SMS arrives in the inbox': 'تصل الرسالة النصية إلى صندوق الوارد',
+  'Twilio number or forwarding phone': 'رقم Twilio أو هاتف يعيد التوجيه',
+  'A text sent to the organization’s SMS address lands in the Bayyinah inbox first, with its sender, time and language indicators. Nothing in it is acted on automatically and Bayyinah never replies to the sender. A preparer turns it into a case or dismisses it with a reason.':
+    'تصل الرسالة المرسلة إلى عنوان الرسائل النصية الخاص بالمؤسسة إلى صندوق وارد بيّنة أولاً، مع المرسل والوقت والمؤشرات اللغوية. لا يُنفَّذ أي شيء مما فيها تلقائياً، ولا تردّ بيّنة على المرسل أبداً. يحوّلها المُعِدّ إلى حالة أو يستبعدها مع ذكر السبب.',
+  'A message waiting in the inbox.': 'رسالة تنتظر في صندوق الوارد.',
+  'SMS intake turned on': 'استقبال الرسائل النصية مفعّل',
+  'create case from the SMS': 'إنشاء حالة من الرسالة',
+  'Request by SMS': 'طلب عبر رسالة نصية',
+  'A text asks to pay into a new account. It lands in the inbox first, becomes a case with the SMS as its source, and is rejected after the supplier denies it.':
+    'رسالة نصية تطلب الدفع إلى حساب جديد. تصل إلى صندوق الوارد أولاً، ثم تصبح حالة مصدرها الرسالة نفسها، وتُرفض بعد أن ينفي المورّد الطلب.',
+  'The sender number matches the supplier’s recorded phone — which proves nothing, because sender numbers can be forged.':
+    'رقم المرسل يطابق الهاتف المسجّل للمورّد — وهذا لا يثبت شيئاً، لأن أرقام المرسلين يمكن تزويرها.',
+  'Supplier and request type are suggested from the message; the preparer confirms them.': 'يُقترح المورّد ونوع الطلب من الرسالة، ويؤكدهما المُعِدّ.',
+  'The SMS is already the first source, exactly as received.': 'الرسالة النصية هي المصدر الأول بالفعل، كما وردت تماماً.',
 };
