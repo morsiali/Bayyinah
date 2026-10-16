@@ -14,6 +14,10 @@ const NOUN: Record<string, string> = {
   'Verification task': 'مهمة التحقق',
 };
 
+const FIELD_NAMES: Record<string, string> = {
+  amount: 'Amount', currency: 'Currency', beneficiaryName: 'Beneficiary name', iban: 'IBAN', accountNumber: 'Account number', senderEmail: 'Sender email', requestedPaymentDate: 'Requested payment date', invoiceNumber: 'Invoice number',
+};
+
 const IBAN_PROBLEM = (p: string) => {
   if (p === 'does not have the structure of an IBAN') return 'لا يملك بنية الآيبان';
   if (p === 'fails the IBAN checksum') return 'لا يجتاز رقم التحقق الخاص بالآيبان';
@@ -98,6 +102,7 @@ export const AR_PATTERNS: Pattern[] = [
   { re: /^Outstanding: (.+)\.$/, to: (m, tr) => `متبقٍ: ${list(m[1], /; /, tr, '؛ ')}.` },
 
   // Case history
+  { re: /^Material correction to (\w+)$/, to: (m, tr) => `تصحيح جوهري لحقل «${tr(FIELD_NAMES[m[1]] ?? m[1])}»` },
   { re: /^Reopened: (.+)$/s, to: (m) => `أُعيد فتحها: ${m[1]}` },
   { re: /^Supplier reference updated to version (\d+)$/, to: (m) => `حُدّث السجل المرجعي للمورّد إلى النسخة ${m[1]}` },
 ];

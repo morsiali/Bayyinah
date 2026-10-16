@@ -199,6 +199,16 @@
   }
 }
 
+/* Workflow map: the connector into the current step flows. */
+.wf-flow {
+  animation: wf-dash 0.9s linear infinite;
+}
+@keyframes wf-dash {
+  to {
+    stroke-dashoffset: -12;
+  }
+}
+
 @media print {
   .no-print {
     display: none !important;

@@ -138,3 +138,9 @@ describe('Locale selection', () => {
     expect(formatDate('en', d, { timeStyle: 'short' })).toBe('12:00');
   });
 });
+
+describe('Audit reasons', () => {
+  it('translates material corrections', () => {
+    expect(translateText('ar', 'Material correction to iban')).toBe('تصحيح جوهري لحقل «الآيبان»');
+  });
+});

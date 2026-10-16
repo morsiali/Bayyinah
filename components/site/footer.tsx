@@ -8,7 +8,7 @@ import { CopyEmail } from './copy-email';
 export async function SiteFooter({ cta = true }: { cta?: boolean }) {
   const { t } = await getT();
   const COLS = [
-    { title: t('Product'), links: [{ href: '/#workflow', label: t('How it works') }, { href: '/#types', label: t('Request types') }, { href: '/#ai', label: t('What the AI does') }, { href: '/#example', label: t('Illustrative example') }] },
+    { title: t('Product'), links: [{ href: '/workflow', label: t('Full workflow') }, { href: '/#workflow', label: t('How it works') }, { href: '/#types', label: t('Request types') }, { href: '/#ai', label: t('What the AI does') }, { href: '/#example', label: t('Illustrative example') }] },
     { title: t('Try it'), links: [{ href: '/demo', label: t('Demo mode') }, { href: liveHref('/signup'), label: t('Register an organization') }, { href: liveHref('/login'), label: t('Sign in') }, { href: liveHref('/forgot-password'), label: t('Reset password') }] },
     { title: t('Trust'), links: [{ href: '/privacy', label: t('Privacy notice (draft)') }, { href: '/terms', label: t('Terms of use (draft)') }, { href: '/#faq', label: t('Questions & limits') }] },
   ];

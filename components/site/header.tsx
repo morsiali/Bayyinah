@@ -13,6 +13,7 @@ export async function SiteHeader({ tone = 'light' }: { tone?: 'light' | 'dark' }
   const user = IS_STATIC_SITE ? null : await getCurrentUser();
   const light = tone === 'light';
   const NAV = [
+    { href: '/workflow', label: t('Workflow') },
     { href: '/#workflow', label: t('How it works') },
     { href: '/#example', label: t('Example') },
     { href: '/#types', label: t('Request types') },

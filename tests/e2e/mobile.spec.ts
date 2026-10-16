@@ -9,7 +9,7 @@ async function noOverflow(page: import('@playwright/test').Page, path: string) {
 }
 
 test('public pages fit a phone screen', async ({ page }) => {
-  for (const p of ['/', '/demo', '/login', '/signup', '/privacy', '/terms', '/forgot-password']) await noOverflow(page, p);
+  for (const p of ['/', '/demo', '/workflow', '/login', '/signup', '/privacy', '/terms', '/forgot-password']) await noOverflow(page, p);
 });
 
 for (const email of ['omar@alwaha.example', 'layla@alwaha.example', 'ops@bayyinah.example']) {

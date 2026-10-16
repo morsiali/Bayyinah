@@ -136,7 +136,7 @@ test('Arabic layout fits a phone screen', async ({ page, context, baseURL }) => 
     await page.goto(p, { waitUntil: 'networkidle' });
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth), p).toBeLessThanOrEqual(1);
   };
-  for (const p of ['/', '/demo', '/login']) await fits(p);
+  for (const p of ['/', '/demo', '/login', '/workflow']) await fits(p);
   const r = await page.request.post('/api/auth/login', { data: { email: 'omar@alwaha.example', password: PASSWORD } });
   expect(r.ok()).toBe(true);
   await page.goto('/app', { waitUntil: 'networkidle' });

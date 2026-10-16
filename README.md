@@ -16,6 +16,7 @@ A verification workflow for small businesses in the UAE: invoice payments, suppl
 |---|---|
 | Public website, request check and Demo Mode — English (GitHub Pages) | **https://morsiali.github.io/Bayyinah/** |
 | Same, in Arabic — العربية | **https://morsiali.github.io/Bayyinah/ar/** |
+| Interactive workflow map (every step, branch and loop) | **https://morsiali.github.io/Bayyinah/workflow/** |
 | Full live app with sign-in, cases and AI (GitHub Codespaces) | **https://codespaces.new/morsiali/Bayyinah?quickstart=1** |
 
 The whole interface is available in **English and Arabic (right-to-left)** — switch with the language button at the top of any page; the choice is remembered, and browsers set to Arabic open in Arabic.
@@ -75,7 +76,7 @@ The seed leaves one case at each stage: approved (with report), waiting for inde
 | Decision Passport (case workspace) and printable report | `/app/{org}/cases/{id}` | Members, actions by role |
 | Platform operations (metadata only, no case content) | `/platform` | Provisioned platform admins |
 
-**Workflow:** create/select supplier → create case → add source (paste text or text-based PDF) → analysis (AI or local) → review/correct extraction → deterministic comparison → bounded preparation agent → human independent verification → submit for review → separate reviewer decides → report + audit history.
+**Workflow:** see `/workflow` for the interactive map (data in `lib/workflow.ts`, checked against the server's status transitions by `tests/unit/workflow.test.ts`). In short: create/select supplier → create case → add source (paste text or text-based PDF) → analysis (AI or local) → review/correct extraction → deterministic comparison → bounded preparation agent → human independent verification → submit for review → separate reviewer decides → report + audit history.
 
 ## Architecture
 

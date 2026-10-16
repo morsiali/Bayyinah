@@ -266,9 +266,14 @@ export default async function HomePage() {
               </h2>
               <p className="t-lead mt-6 max-w-2xl">{t('The workflow is the product. Each step unlocks only when the one before it is complete, and each is done by a person with the right role.')}</p>
             </div>
-            <LinkButton href={liveHref('/signup')} arrow className="self-start md:self-auto">
-              {t('Start a live case')}
-            </LinkButton>
+            <div className="flex flex-wrap gap-2 self-start md:self-auto">
+              <LinkButton href="/workflow" variant="secondary" arrow>
+                {t('See the full workflow')}
+              </LinkButton>
+              <LinkButton href={liveHref('/signup')} arrow>
+                {t('Start a live case')}
+              </LinkButton>
+            </div>
           </div>
           <div className="mt-12 space-y-3">
             {WORKFLOW.map((w, i) => (
